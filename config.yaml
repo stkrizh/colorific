@@ -1,0 +1,19 @@
+default:
+  postgres:
+    database: !ENV ${POSTGRES_DB}
+    user: !ENV ${POSTGRES_USER}
+    password: !ENV ${POSTGRES_PASSWORD}
+    host: !ENV ${POSTGRES_HOST}
+    port: !ENV ${POSTGRES_PORT}
+  
+  colorific:
+    pool_exec_size: 2
+
+
+test:
+  postgres:
+    database: !ENV ${POSTGRES_TEST_DB}
+    user: !ENV ${POSTGRES_TEST_USER}
+    password: !ENV ${POSTGRES_TEST_PASSWORD}
+    host: !ENV ${POSTGRES_TEST_HOST}
+    port: !ENV ${POSTGRES_TEST_PORT}

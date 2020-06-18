@@ -1,0 +1,15 @@
+alembic
+aiodns
+aiohttp
+aiojobs
+aiopg[sa]
+cchardet
+marshmallow
+Pillow
+pytest
+pytest-aiohttp
+python-dotenv
+pyyaml
+scikit-learn
+scikit-image
+tenacity

@@ -1,0 +1,8 @@
+-c main.txt
+
+black
+flake8
+ipdb
+ipython
+isort
+mypy
