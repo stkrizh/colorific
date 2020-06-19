@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from collections import Counter
 from dataclasses import dataclass
 from itertools import combinations
 from typing import Dict, List
@@ -71,7 +72,7 @@ class KMeansExtractor(ColorExtractor):
         Prepare image and convert it to data for cluster analysis.
         """
         rgb_image = image.convert("RGB")
-        rgb_image.thumbnail(IMAGE_THUMBNAIL_SIZE, resample=Image.LANCZOS)
+        rgb_image = rgb_image.resize(IMAGE_THUMBNAIL_SIZE, resample=Image.LANCZOS)
         rgb_image_data = np.expand_dims(
             np.array(rgb_image.getdata(), dtype=np.uint8), axis=0
         )
@@ -97,18 +98,16 @@ class KMeansExtractor(ColorExtractor):
         np.ndarray, [N_new_clusters, 4] shape
             New cluster centroids and their percentage.
         """
-        _, counts = np.unique(labels, return_counts=True)
-        assert len(counts) == len(centroids)
-
+        label_counter: Dict[int, int] = Counter(labels)
         current_centroids: Dict[int, np.ndarray] = {}
         current_counts: Dict[int, int] = {}
 
         # Filter out clusters with 0 frequency
-        for ix, (centroid, count) in enumerate(zip(centroids, counts)):
-            if count == 0:
+        for ix, centroid in enumerate(centroids):
+            if label_counter[ix] == 0:
                 continue
             current_centroids[ix] = centroid
-            current_counts[ix] = count
+            current_counts[ix] = label_counter[ix]
 
         while True:
             for ix_1, ix_2 in combinations(current_centroids, 2):
