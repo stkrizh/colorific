@@ -1,7 +1,8 @@
+from typing import Tuple
+
 import numpy as np
 import pytest
 from PIL import Image
-from typing import Tuple
 
 from colorific.extractor import KMeansExtractor
 

@@ -9,7 +9,6 @@ from PIL import Image
 from skimage.color import lab2rgb, rgb2lab
 from sklearn.cluster import MiniBatchKMeans
 
-
 COLORS_DIFFERENCE_THRESHOLD = 20
 IMAGE_THUMBNAIL_SIZE = (300, 300)
 MAX_NUMBER_OF_CLUSTERS = 12
