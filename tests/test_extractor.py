@@ -1,18 +1,8 @@
 import numpy as np
 import pytest
 from PIL import Image
-from typing import Tuple
 
 from colorific.extractor import KMeansExtractor
-
-
-@pytest.fixture
-def get_one_color_image() -> Image:
-    def _one_color_image(mode: str, color: Tuple[int, int, int]):
-        image = Image.new(mode, (500, 500), color=color)
-        return image
-
-    return _one_color_image
 
 
 @pytest.mark.parametrize(
@@ -34,6 +24,13 @@ def test_one_color_image(mode, color, expected_rgb, get_one_color_image):
     colors = extractor.extract(image)
     assert len(colors) == 1
     assert np.linalg.norm(np.array(colors[0].rgb) - np.array(expected_rgb)) < 10
+
+
+def test_four_color_image(get_four_color_image):
+    extractor = KMeansExtractor()
+    image = get_four_color_image("RGB")
+    colors = extractor.extract(image)
+    assert len(colors) == 4
 
 
 def test_small_image():

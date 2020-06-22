@@ -8,7 +8,7 @@ from . import routes, workers
 HERE = pathlib.Path(__file__).parent
 
 
-def init(setup_workers: bool = False) -> web.Application:
+def init(setup_workers: bool = True) -> web.Application:
     application = web.Application()
 
     # Setup ------------------------------

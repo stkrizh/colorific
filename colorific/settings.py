@@ -2,6 +2,7 @@ import os
 import re
 from dataclasses import dataclass
 from pathlib import Path
+from typing import List
 
 import yaml
 from dotenv import load_dotenv
@@ -34,6 +35,12 @@ class PostgresConfig:
 
 @dataclass(frozen=True)
 class ColorificConfig:
+    allowed_image_content_types: List[str]
+    image_max_size_bytes: int
+    image_max_height: int
+    image_max_width: int
+    image_min_height: int
+    image_min_width: int
     pool_exec_size: int
 
 

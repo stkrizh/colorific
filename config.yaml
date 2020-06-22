@@ -7,8 +7,15 @@ default:
     port: !ENV ${POSTGRES_PORT}
   
   colorific:
+    allowed_image_content_types:
+      - image/jpeg
+      - image/png
+    image_max_size_bytes: 5242880 # 5 Mb
+    image_max_height: 5000
+    image_max_width: 5000
+    image_min_height: 50
+    image_min_width: 50
     pool_exec_size: 2
-
 
 test:
   postgres:
@@ -17,3 +24,9 @@ test:
     password: !ENV ${POSTGRES_TEST_PASSWORD}
     host: !ENV ${POSTGRES_TEST_HOST}
     port: !ENV ${POSTGRES_TEST_PORT}
+
+  colorific:
+    image_max_size_bytes: 1500000
+    image_max_height: 1000
+    image_max_width: 1000
+    pool_exec_size: 1
