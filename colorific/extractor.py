@@ -30,8 +30,9 @@ class Color:
     percentage: float
 
     def __post_init__(self):
-        _rgb: np.ndarray = lab2rgb(np.array([self.L, self.a, self.b], dtype=np.float32))
-        self.rgb: List[int] = [int(np.round(value * 255)) for value in _rgb]
+        rgb: np.ndarray = lab2rgb(np.array([self.L, self.a, self.b], dtype=np.float32))
+        self.rgb: List[int] = [int(np.round(value * 255)) for value in rgb]
+        self.r, self.g, self.b = self.rgb
 
 
 class ColorExtractor(ABC):
@@ -58,7 +59,7 @@ class KMeansExtractor(ColorExtractor):
         Entry point for color palette extraction.
         """
         lab_image_data = self.prepare_image_data(image)
-        clustering = MiniBatchKMeans(n_clusters=MAX_NUMBER_OF_CLUSTERS)
+        clustering = MiniBatchKMeans(n_clusters=MAX_NUMBER_OF_CLUSTERS, verbose=2)
         clustering.fit(lab_image_data)
 
         centroids = self.merge_similar_colors(

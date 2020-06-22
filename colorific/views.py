@@ -1,11 +1,15 @@
+import asyncio
 import json
-from typing import Optional
+from typing import List, Optional
 
 from aiohttp import StreamReader
 from aiohttp.web import HTTPBadRequest, Response, View, json_response
+from marshmallow import ValidationError
 
+from .extractor import Color
+from .schema import ColorSchema
 from .settings import config
-from .utils import convert_bytes_to_image
+from .utils import extract_colors
 
 IMAGE_TOO_LARGE_ERROR = (
     f"The image file is too large. Maximum file size is "
@@ -40,15 +44,25 @@ class ColorExtractionView(View):
         self.validate_content_length()
 
         buffer = await self.read_bytes(self.request.content)
-        _ = convert_bytes_to_image(buffer)
-        return json_response({"status": "OK"})
+        loop = asyncio.get_running_loop()
+        try:
+            colors: List[Color] = await loop.run_in_executor(
+                self.request.app["executor"], extract_colors, buffer,
+            )
+        except ValidationError as error:
+            raise self.bad_request(**error.normalized_messages())
 
-    async def read_bytes(self, reader: StreamReader) -> bytes:
+        schema = ColorSchema()
+        return json_response(schema.dump(colors, many=True))
+
+    async def read_bytes(
+        self, reader: StreamReader, chunk_size: int = 2 ** 18
+    ) -> bytes:
         """
         Read raw bytes from request body.
         """
         buffer = b""
-        async for chunk in self.request.content.iter_chunked(2 ** 18):
+        async for chunk in self.request.content.iter_chunked(chunk_size):
             buffer += chunk
             if len(buffer) > config.colorific.image_max_size_bytes:
                 raise self.bad_request(image=IMAGE_TOO_LARGE_ERROR)

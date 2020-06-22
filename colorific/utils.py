@@ -1,5 +1,5 @@
 from io import BytesIO
-from typing import List
+from typing import BinaryIO, List
 
 from marshmallow import ValidationError
 from PIL import Image, UnidentifiedImageError
@@ -12,15 +12,17 @@ def extract_colors(image_data: bytes) -> List[Color]:
     """
     Helper method for color extraction.
     """
-    extractor = KMeansExtractor()
-    image = convert_bytes_to_image(image_data)
-    colors = extractor.extract(image)
-    return colors
+    with BytesIO(image_data) as buffer:
+        image = open_image(buffer)
+        extractor = KMeansExtractor()
+        colors = extractor.extract(image)
+        return colors
 
 
-def convert_bytes_to_image(image_data: bytes) -> Image:
+def open_image(buffer: BinaryIO) -> Image:
     """
-    Convert raw bytes to `Image` instance and perform basic validation.
+    Convert raw bytes from `buffer` to `Image` instance
+    and perform basic validation.
 
     Raises
     ------
@@ -28,8 +30,7 @@ def convert_bytes_to_image(image_data: bytes) -> Image:
         If image is invalid.
     """
     try:
-        with BytesIO(image_data) as buffer:
-            image = Image.open(buffer)
+        image = Image.open(buffer)
     except UnidentifiedImageError:
         raise ValidationError("Invalid image format.", field_name="image")
 
