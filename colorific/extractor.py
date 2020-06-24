@@ -59,7 +59,7 @@ class KMeansExtractor(ColorExtractor):
         Entry point for color palette extraction.
         """
         lab_image_data = self.prepare_image_data(image)
-        clustering = MiniBatchKMeans(n_clusters=MAX_NUMBER_OF_CLUSTERS, verbose=2)
+        clustering = MiniBatchKMeans(n_clusters=MAX_NUMBER_OF_CLUSTERS)
         clustering.fit(lab_image_data)
 
         centroids = self.merge_similar_colors(

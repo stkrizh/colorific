@@ -10,6 +10,9 @@ default:
     allowed_image_content_types:
       - image/jpeg
       - image/png
+    http_client_retrying_max_attempts: 5
+    http_client_retrying_wait_time: 3
+    http_client_timeout: 30
     image_max_size_bytes: 5242880 # 5 Mb
     image_max_height: 5000
     image_max_width: 5000
