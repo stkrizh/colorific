@@ -156,7 +156,7 @@ class ColorExtractionView(View):
         max_content_length: int = config.colorific.image_max_size_bytes
         content_length: Optional[int] = obj.content_length
 
-        if content_length is None:
+        if not content_length:
             raise self.bad_request(
                 content_length="Content-Length HTTP-header must be set."
             )

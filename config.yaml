@@ -29,6 +29,9 @@ test:
     port: !ENV ${POSTGRES_TEST_PORT}
 
   colorific:
+    http_client_retrying_max_attempts: 2
+    http_client_retrying_wait_time: 0.5
+    http_client_timeout: 1
     image_max_size_bytes: 1500000
     image_max_height: 1000
     image_max_width: 1000
