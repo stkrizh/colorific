@@ -1,6 +1,7 @@
 # flake8:noqa
 # isort:skip_file
 from concurrent.futures import ProcessPoolExecutor
+from io import BytesIO
 from typing import List, Optional, Tuple
 
 import pytest
@@ -93,3 +94,28 @@ def get_four_color_image(scope="session") -> Image:
         return image
 
     return _get_image
+
+
+@pytest.fixture(scope="session")
+def image_data(get_one_color_image):
+    image = get_one_color_image("RGB", (255, 0, 0), (500, 500))
+    with BytesIO() as buffer:
+        image.save(buffer, "JPEG")
+        buffer.seek(0)
+        data = buffer.read()
+    image.close()
+    return data
+
+
+@pytest.fixture(scope="session")
+def get_image_data(get_one_color_image):
+    def _get_image_data(color=(255, 0, 0), size=(500, 500), image_format="JPEG"):
+        image = get_one_color_image("RGB", color, size)
+        with BytesIO() as buffer:
+            image.save(buffer, image_format)
+            buffer.seek(0)
+            data = buffer.read()
+        image.close()
+        return data
+
+    return _get_image_data

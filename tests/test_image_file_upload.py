@@ -1,34 +1,7 @@
-from io import BytesIO
-
 import pytest
 
 from colorific.settings import config
 from colorific.views import IMAGE_TOO_LARGE_ERROR
-
-
-@pytest.fixture(scope="session")
-def image_data(get_one_color_image):
-    image = get_one_color_image("RGB", (255, 0, 0), (500, 500))
-    with BytesIO() as buffer:
-        image.save(buffer, "JPEG")
-        buffer.seek(0)
-        data = buffer.read()
-    image.close()
-    return data
-
-
-@pytest.fixture(scope="session")
-def get_image_data(get_one_color_image):
-    def _get_image_data(color=(255, 0, 0), size=(500, 500), image_format="JPEG"):
-        image = get_one_color_image("RGB", color, size)
-        with BytesIO() as buffer:
-            image.save(buffer, image_format)
-            buffer.seek(0)
-            data = buffer.read()
-        image.close()
-        return data
-
-    return _get_image_data
 
 
 async def test_image_without_content_type_header(client, image_data):

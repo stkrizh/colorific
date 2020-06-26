@@ -1,9 +1,9 @@
 import pathlib
 
 import aiojobs.aiohttp
-from aiohttp import web
+from aiohttp import ClientSession, web
 
-from . import routes, workers
+from . import db, routes, workers
 
 HERE = pathlib.Path(__file__).parent
 
@@ -18,4 +18,13 @@ def init(setup_workers: bool = True) -> web.Application:
     if setup_workers:
         application.cleanup_ctx.append(workers.setup)
 
+    application.cleanup_ctx.append(db.setup)
+    application.cleanup_ctx.append(setup_http_client)
+
     return application
+
+
+async def setup_http_client(app):
+    app["http_client"] = ClientSession()
+    yield
+    await app["http_client"].close()

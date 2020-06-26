@@ -36,6 +36,9 @@ class PostgresConfig:
 @dataclass(frozen=True)
 class ColorificConfig:
     allowed_image_content_types: List[str]
+    http_client_retrying_max_attempts: int
+    http_client_retrying_wait_time: int
+    http_client_timeout: int
     image_max_size_bytes: int
     image_max_height: int
     image_max_width: int

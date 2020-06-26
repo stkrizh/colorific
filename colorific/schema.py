@@ -6,3 +6,7 @@ class ColorSchema(Schema):
     g = fields.Integer()
     b = fields.Integer()
     percentage = fields.Float()
+
+
+class UploadURLRequestSchema(Schema):
+    url = fields.URL(schemes={"http", "https"})
