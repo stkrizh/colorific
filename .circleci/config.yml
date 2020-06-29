@@ -7,9 +7,9 @@ jobs:
     steps:
       - checkout
       - run:
-        name: The First Step
-        command: |
-          python -c "assert 6 * 7 == 42"
+          name: The First Step
+          command: |
+            python -c "assert 6 * 7 == 42"
 
 workflows:
   main:
