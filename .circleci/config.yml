@@ -6,11 +6,7 @@ jobs:
       - image: python:3.8
       - image: postgres:12
         environment:
-          POSTGRES_USER: $POSTGRES_TEST_USER
-          POSTGRES_PASSWORD: $POSTGRES_TEST_PASSWORD
-          POSTGRES_DB: $POSTGRES_TEST_DB
-          POSTGRES_HOST: $POSTGRES_TEST_HOST
-          POSTGRES_PORT: $POSTGRES_TEST_PORT
+          POSTGRES_PASSWORD: test
     steps:
       - checkout
       - restore_cache:
@@ -28,6 +24,13 @@ jobs:
       - run:
           name: Run tests
           command: source .venv/bin/activate && pytest
+          environment:
+            POSTGRES_TEST_USER: postgres
+            POSTGRES_TEST_PASSWORD: test
+            POSTGRES_TEST_DB: postgres
+            POSTGRES_TEST_HOST: localhost
+            POSTGRES_TEST_PORT: 5432
+            OMP_NUM_THREADS: 1
 
 workflows:
   main:
