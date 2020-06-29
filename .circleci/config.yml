@@ -13,9 +13,21 @@ jobs:
           POSTGRES_PORT: $POSTGRES_TEST_PORT
     steps:
       - checkout
+      - restore_cache:
+          key: colorific-{{ checksum "requirements/main.txt" }}
+      - run:
+          name: Create virtual environment
+          command: test -d .venv || python -m venv .venv
+      - run:
+          name: Install requirements
+          command: .venv/bin/pip install -r requirements/main.txt
+      - save_cache:
+          key: colorific-{{ checksum "requirements/main.txt" }}
+          paths:
+            - .venv
       - run:
           name: Run tests
-          command: pytest
+          command: source .venv/bin/activate && pytest
 
 workflows:
   main:
