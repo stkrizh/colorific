@@ -1,16 +1,17 @@
 version: 2.1
 
-orbs:
-  python: circleci/python@0.2.1
-
 jobs:
   build-and-test:
-    executor: python/default
+    docker:
+      - image: python:3.8
     steps:
       - checkout
-      - python/load-cache
-      - python/install-deps
-      - python/save-cache
       - run:
-          command: ./manage.py test
-          name: Test
+        name: The First Step
+        command: |
+          python -c "assert 6 * 7 == 42"
+
+workflows:
+  main:
+    jobs:
+      - build-and-test
