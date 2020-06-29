@@ -3,7 +3,7 @@ version: '3'
 services:
 
   db:
-    image: postgres
+    image: postgres:12
     restart: always
     environment: 
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -11,9 +11,9 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "${POSTGRES_PORT}:5432"
-  
+
   test_db:
-    image: postgres
+    image: postgres:12
     restart: always
     environment: 
       POSTGRES_PASSWORD: ${POSTGRES_TEST_PASSWORD}
