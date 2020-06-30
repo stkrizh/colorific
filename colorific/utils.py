@@ -1,73 +1,15 @@
 from io import BytesIO
-from typing import BinaryIO, List
+from typing import List
 
-from marshmallow import ValidationError
-from PIL import Image, UnidentifiedImageError
-
-from .extractor import Color, KMeansExtractor
-from .settings import config
+from .extractor import Color, ColorExtractor
+from .image_loader import open_image
 
 
-def extract_colors(image_data: bytes) -> List[Color]:
+def extract_colors(image_data: bytes, color_extractor: ColorExtractor) -> List[Color]:
     """
     Helper method for color extraction.
     """
     with BytesIO(image_data) as buffer:
         image = open_image(buffer)
-        extractor = KMeansExtractor()
-        colors = extractor.extract(image)
+        colors = color_extractor.extract(image)
         return colors
-
-
-def open_image(buffer: BinaryIO) -> Image:
-    """
-    Convert raw bytes from `buffer` to `Image` instance
-    and perform basic validation.
-
-    Raises
-    ------
-    ValidationError:
-        If image is invalid.
-    """
-    try:
-        image = Image.open(buffer)
-    except UnidentifiedImageError:
-        raise ValidationError("Invalid image format.", field_name="image")
-
-    validate_image_dimensions(image)
-    return image
-
-
-def validate_image_dimensions(image: Image) -> None:
-    """
-    Valdiate image dimensions (width and height) and raise `ValidationError`
-    if dimensionas are not allowed.
-
-    Raises
-    ------
-    ValidationError:
-        If image dimensions are not allowed.
-    """
-    max_width = config.colorific.image_max_width
-    max_height = config.colorific.image_max_height
-
-    if image.width > max_width or image.height > max_height:
-        raise ValidationError(
-            (
-                "Maximum allowed image size is {max_width} x {max_height} pixels, "
-                "currently it's {image.width} x {image.height}"
-            ),
-            field_name="image",
-        )
-
-    min_width = config.colorific.image_min_width
-    min_height = config.colorific.image_min_height
-
-    if image.width < min_width or image.height < min_height:
-        raise ValidationError(
-            (
-                "Minimum allowed image size is {min_width} x {min_height} pixels, "
-                "currently it's {image.width} x {image.height}"
-            ),
-            field_name="image",
-        )
