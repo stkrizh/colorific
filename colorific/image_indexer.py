@@ -14,7 +14,6 @@ from . import image_loader
 from .extractor import Color, ColorExtractor
 from .utils import extract_colors
 
-
 LOG = logging.getLogger(__name__)
 
 
