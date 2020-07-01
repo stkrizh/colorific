@@ -5,7 +5,7 @@ default:
     password: !ENV ${POSTGRES_PASSWORD}
     host: !ENV ${POSTGRES_HOST}
     port: !ENV ${POSTGRES_PORT}
-  
+
   colorific:
     allowed_image_content_types:
       - image/jpeg
@@ -19,6 +19,14 @@ default:
     image_min_height: 50
     image_min_width: 50
     pool_exec_size: 2
+
+  unsplash:
+    access_key: !ENV ${UNSPLASH_API_ACCESS_KEY}
+    end_page: -1
+    images_per_page: 30
+    indexing_interval_sec: 120
+    start_page: 1
+
 
 test:
   postgres:

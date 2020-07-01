@@ -11,7 +11,7 @@ from tenacity import RetryError
 from . import image_loader
 from .extractor import Color, KMeansExtractor
 from .schema import ColorSchema, UploadURLRequestSchema
-from .utils import extract_colors
+
 
 LOG = logging.getLogger(__file__)
 
@@ -72,9 +72,8 @@ class ColorExtractionView(View):
             color_extractor = KMeansExtractor()
             colors: List[Color] = await loop.run_in_executor(
                 self.request.app["executor"],
-                extract_colors,
+                color_extractor.extract_from_bytes,
                 image_data,
-                color_extractor,
             )
         except ValidationError as error:
             raise self.bad_request(**error.normalized_messages())

@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from collections import Counter
 from dataclasses import dataclass
+from io import BytesIO
 from itertools import combinations
 from typing import Dict, List
 
@@ -8,6 +9,9 @@ import numpy as np
 from PIL import Image
 from skimage.color import lab2rgb, rgb2lab
 from sklearn.cluster import MiniBatchKMeans
+
+from .image_loader import open_image
+
 
 COLORS_DIFFERENCE_THRESHOLD = 20
 IMAGE_THUMBNAIL_SIZE = (300, 300)
@@ -43,6 +47,13 @@ class ColorExtractor(ABC):
     @abstractmethod
     def extract(self, image: Image) -> List[Color]:
         ...
+
+    def extract_from_bytes(self, image_data: bytes) -> List[Color]:
+        with BytesIO(image_data) as buffer:
+            image = open_image(buffer)
+            colors = self.extract(image)
+            image.close()
+            return colors
 
 
 class KMeansExtractor(ColorExtractor):

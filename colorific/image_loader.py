@@ -12,6 +12,7 @@ from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_fi
 
 from .settings import config
 
+
 IMAGE_TOO_LARGE_ERROR = (
     f"The image file is too large. Maximum file size is "
     f"{(config.colorific.image_max_size_bytes / 2**20):.2f} Mb."

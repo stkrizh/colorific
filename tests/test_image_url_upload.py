@@ -11,6 +11,7 @@ from tenacity import RetryError
 from colorific.image_loader import IMAGE_INVALID_TYPE_ERROR, IMAGE_TOO_LARGE_ERROR
 from colorific.settings import config
 
+
 VALID_URL = "https://example.com/image.jpg"
 
 
