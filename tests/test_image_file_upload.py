@@ -1,7 +1,7 @@
 import pytest
 
+from colorific.image_loader import IMAGE_TOO_LARGE_ERROR
 from colorific.settings import config
-from colorific.views import IMAGE_TOO_LARGE_ERROR
 
 
 async def test_image_without_content_type_header(client, image_data):
@@ -67,6 +67,8 @@ async def test_invalid_image_dimensions(client, get_image_data, width, height):
     assert response.status == 400
     response_json = await response.json()
     assert "image" in response_json
+    assert f"{width}" in response_json["image"][0]
+    assert f"{height}" in response_json["image"][0]
 
 
 @pytest.mark.parametrize(
@@ -98,7 +100,7 @@ async def test_too_big_image_size(client):
     )
     assert response.status == 400
     response_json = await response.json()
-    assert response_json["image"] == IMAGE_TOO_LARGE_ERROR
+    assert response_json["image"] == [IMAGE_TOO_LARGE_ERROR]
 
 
 async def test_valid_image_size(client):
@@ -108,7 +110,7 @@ async def test_valid_image_size(client):
     )
     assert response.status == 400
     response_json = await response.json()
-    assert response_json["image"] != IMAGE_TOO_LARGE_ERROR
+    assert response_json["image"] != [IMAGE_TOO_LARGE_ERROR]
 
 
 async def test_invalid_image_data(client, image_data):

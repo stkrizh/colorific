@@ -6,6 +6,7 @@ from aiohttp.web import Application
 
 from .settings import config
 
+
 METADATA = sa.MetaData()
 
 

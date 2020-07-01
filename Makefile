@@ -67,6 +67,13 @@ format: .check-venv
 	$(SUCCESS)
 
 
+.isort-check: .check-venv
+	@echo "-----------------------"
+	@echo "--- Running black checks"
+	isort --check-only --recursive colorific tests
+	$(SUCCESS)
+
+
 .flake: .check-venv
 	@echo "-----------------------"
 	@echo "--- Running flake8 checks"
@@ -81,7 +88,7 @@ format: .check-venv
 	$(SUCCESS)
 
 
-lint: .mypy .flake .black-check
+lint: .isort-check .black-check .mypy .flake
 
 
 test: .check-venv

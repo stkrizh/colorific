@@ -8,8 +8,9 @@ import pytest
 from aiohttp import ClientConnectorError, ClientResponseError
 from tenacity import RetryError
 
+from colorific.image_loader import IMAGE_INVALID_TYPE_ERROR, IMAGE_TOO_LARGE_ERROR
 from colorific.settings import config
-from colorific.views import IMAGE_INVALID_TYPE_ERROR, IMAGE_TOO_LARGE_ERROR
+
 
 VALID_URL = "https://example.com/image.jpg"
 
@@ -42,10 +43,7 @@ class ResponseMock:
 
 async def test_correct_request(client, get_image_data):
     image_data = get_image_data()
-    with patch(
-        "colorific.views.ColorExtractionView.download_image_by_url",
-        new_callable=AsyncMock,
-    ) as mock:
+    with patch("colorific.image_loader.load_by_url", new_callable=AsyncMock,) as mock:
         mock.return_value = image_data
         response = await client.put("/image", json={"url": VALID_URL})
         assert response.status == 200
@@ -70,15 +68,12 @@ async def test_retry_error(client):
     def side_effect(*args, **kwargs):
         raise RetryError(None)
 
-    with patch(
-        "colorific.views.ColorExtractionView.download_image_by_url",
-        new_callable=AsyncMock,
-    ) as mock:
+    with patch("colorific.image_loader.load_by_url", new_callable=AsyncMock,) as mock:
         mock.side_effect = side_effect
         response = await client.put("/image", json={"url": VALID_URL})
         assert response.status == 400
         response_json = await response.json()
-        assert response_json["url"] == "The requested resource is not available."
+        assert response_json["url"] == ["The requested resource is not available."]
 
 
 async def test_response_status_error(client):
@@ -90,7 +85,7 @@ async def test_response_status_error(client):
         response = await client.put("/image", json={"url": VALID_URL})
         assert response.status == 400
         response_json = await response.json()
-        assert response_json["url"] == "The requested resource is not available."
+        assert response_json["url"] == ["The requested resource is not available."]
 
 
 async def test_network_error(client):
@@ -101,7 +96,7 @@ async def test_network_error(client):
         response = await client.put("/image", json={"url": VALID_URL})
         assert response.status == 400
         response_json = await response.json()
-        assert response_json["url"] == "The requested resource is not available."
+        assert response_json["url"] == ["The requested resource is not available."]
 
 
 async def test_timeout_error(client):
@@ -112,7 +107,7 @@ async def test_timeout_error(client):
         response = await client.put("/image", json={"url": VALID_URL})
         assert response.status == 400
         response_json = await response.json()
-        assert response_json["url"] == "The requested resource is not available."
+        assert response_json["url"] == ["The requested resource is not available."]
 
 
 @pytest.mark.parametrize(
@@ -134,7 +129,7 @@ async def test_invalid_content_type(client, content_type):
         response = await client.put("/image", json={"url": VALID_URL})
         assert response.status == 400
         response_json = await response.json()
-        assert response_json["image"] == IMAGE_INVALID_TYPE_ERROR
+        assert response_json["image"] == [IMAGE_INVALID_TYPE_ERROR]
 
 
 @pytest.mark.parametrize(
@@ -167,7 +162,7 @@ async def test_max_image_size_exceeded(client):
         response = await client.put("/image", json={"url": VALID_URL})
         assert response.status == 400
         response_json = await response.json()
-        assert response_json["image"] == IMAGE_TOO_LARGE_ERROR
+        assert response_json["image"] == [IMAGE_TOO_LARGE_ERROR]
 
 
 async def test_max_image_size_limit(client):
@@ -222,6 +217,8 @@ async def test_invalid_image_dimensions(client, get_image_data, width, height):
         assert response.status == 400
         response_json = await response.json()
         assert "image" in response_json
+        assert f"{width}" in response_json["image"][0]
+        assert f"{height}" in response_json["image"][0]
 
 
 async def test_valid_four_color_image(client, get_four_color_image):

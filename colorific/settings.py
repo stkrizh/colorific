@@ -7,6 +7,7 @@ from typing import List
 import yaml
 from dotenv import load_dotenv
 
+
 BASE_DIR = Path(__file__).parent.parent
 DEFAULT_CONFIG = BASE_DIR / "config.yaml"
 
@@ -15,6 +16,7 @@ DEFAULT_CONFIG = BASE_DIR / "config.yaml"
 class Config:
     postgres: "PostgresConfig"
     colorific: "ColorificConfig"
+    unsplash: "UnsplashConfig"
 
 
 @dataclass(frozen=True)
@@ -31,6 +33,15 @@ class PostgresConfig:
             f"postgresql://{self.user}:{self.password}"
             f"@{self.host}:{self.port}/{self.database}"
         )
+
+
+@dataclass(frozen=True)
+class UnsplashConfig:
+    access_key: str
+    end_page: int
+    images_per_page: int
+    indexing_interval_sec: int
+    start_page: int
 
 
 @dataclass(frozen=True)
@@ -84,6 +95,7 @@ def parse_config(
     return Config(
         postgres=PostgresConfig(**config["postgres"]),
         colorific=ColorificConfig(**config["colorific"]),
+        unsplash=UnsplashConfig(**config["unsplash"]),
     )
 
 
