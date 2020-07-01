@@ -1,0 +1,11 @@
+<div class="colors-container">
+  <ul>
+    <li *ngFor="let color of colors">
+      <span class="color-item"
+      [style.background-color]="convertColorToBackground(color)"
+      [title]="getColorInfo(color)"
+      (click)="selectColor(color)"
+      ></span>
+    </li>
+  </ul>
+</div>

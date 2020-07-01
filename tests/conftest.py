@@ -44,7 +44,7 @@ def client(loop, aiohttp_client, executor):
     Aiohttp test client.
     """
 
-    app = application.init(setup_workers=False, setup_indexing=False)
+    app = application.init(setup_workers=False)
     app["executor"] = executor
     return loop.run_until_complete(aiohttp_client(app))
 

@@ -141,7 +141,7 @@ class UnsplashIndexer(ImageIndexer):
         rewrite: bool = True,
         start_page: int = config.unsplash.start_page,
         end_page: int = config.unsplash.end_page,
-        periodicity: int = config.unsplash.indexing_interval_sec,
+        periodicity: int = config.colorific.image_indexing_interval_sec,
     ):
         self.color_extractor = color_extractor
         self.http_client = http_client

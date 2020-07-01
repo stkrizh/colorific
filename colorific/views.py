@@ -21,6 +21,9 @@ class ColorExtractionView(View):
     Main API-endpoint for color extraction.
     """
 
+    async def options(self) -> Response:
+        return Response(status=200, headers={"Content-Type": "text/plain"})
+
     async def put(self) -> Response:
         if self.request.content_type == "application/json":
             return await self.handle_json_request()

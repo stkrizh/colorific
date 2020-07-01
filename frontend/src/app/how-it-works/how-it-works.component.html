@@ -1,0 +1,91 @@
+<div class="container">
+  <div class="section">
+    <h1 class="title is-3">Как это работает?</h1>
+    <p>
+      Выделение палитры главных цветов изображения является не совсем тривиальной
+      задачей. Существует несколько способов сделать это, об одном из которых - кластеризации
+      пикселей изображения - и пойдет речь далее.
+    </p>
+
+    <ul>
+      <li>
+        <a routerLink="./" fragment="intro">Введение</a>
+      </li>
+      <li>
+        <a routerLink="./" fragment="color-extraction">Выделение цветовой палитры</a>
+      </li>
+      <li>Поиск похожих по цвету изображений</li>
+      <li>Используемые технологии</li>
+      <li>
+        <a routerLink="./" fragment="ref">Ссылки</a>
+      </li>
+      <li>Заключение</li>
+    </ul>
+
+    <h1 id="intro" class="title is-5">
+      <a routerLink="./" fragment="intro">#</a>
+      <span>Введение</span>
+    </h1>
+    <p>
+      Главной используемой технологией для выполнения прикладной вышеобозначенной задачи
+      будет язык программирования Python. В настоящее время Python является одним
+      из наиболее популярных языков программирования
+      [<a routerLink= "./" fragment="ref-python-popularity">1</a>].
+      Популярность его обеспечена в том числе и наличеем большого количества
+      качественно спроектированных,
+      хорошо документированных библиотек для решения прикладных задач.
+    </p>
+
+    <h1 id="color-extraction" class="title is-5">
+      <a routerLink="./" fragment="color-extraction">#</a>
+      <span>Выделение цветовой палитры</span>
+    </h1>
+    <p>
+      Для работы с изображениями будем использовать библиотеку Pillow
+      [<a routerLink= "./" fragment="ref-pillow">2</a>].
+      Данная библиотека позволяет работать со всеми основными форматами
+      изображений. В качестве простого примера, рассмотрим создание эскиза (thumbnail)
+      какого-нибудь изображения:
+    </p>
+    <p>
+      <ngx-gist [gistId]="'stkrizh/bde44aee29619a014a18ffe7a3a4839a'"></ngx-gist>
+    </p>
+
+    <p>
+      Для создания объекта-изображения может быть либо указан путь к файлу, либо
+      передан "file-like" объект (т.е. объект который имеет методы read, seek и tell)
+      в качестве аргумента:
+    </p>
+    <p>
+      <ngx-gist [gistId]="'stkrizh/16eb3b0e52641293d4ba35b063f447d3'"></ngx-gist>
+    </p>
+
+    <p>
+      Нашей задачей является выделение главных цветов изображения. Что же представляет
+      собой цвет?
+    </p>
+
+    <h1 id="ref" class="title is-5">
+      <a routerLink="./" fragment="ref">#</a>
+      <span>Ссылки</span>
+    </h1>
+    <div>
+      <ol>
+        <li id="ref-python-popularity">
+          <a href="https://www.tiobe.com/tiobe-index/" target="blank">
+            https://www.tiobe.com/tiobe-index/
+          </a>
+        </li>
+
+        <li id="ref-pillow">
+          <a href="https://pillow.readthedocs.io/en/stable/" target="blank">
+            https://pillow.readthedocs.io/en/stable/
+          </a>
+        </li>
+
+      </ol>
+    </div>
+
+  </div>
+</div>
+

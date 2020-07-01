@@ -1,0 +1,21 @@
+.colors-container {
+  height: 100%;
+  text-align: center;
+}
+
+.color-item {
+  display: inline-block;
+  cursor: pointer;
+  height: 50px;
+  width: 50px;
+  border-radius: 100%;
+  margin: 10px;
+
+  &:hover {
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  }
+}
+
+li {
+  display: inline-block;
+}

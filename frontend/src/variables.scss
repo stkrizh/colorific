@@ -1,0 +1,8 @@
+$input-shadow: none;
+$input-focus-box-shadow-size: 0;
+$input-focus-box-shadow-color: transparent, 0.25;
+
+$primary: #3ab2c9;
+$family-primary: "PT Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+
+@import "./node_modules/bulma/sass/utilities/_all.sass";

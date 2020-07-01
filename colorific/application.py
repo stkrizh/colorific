@@ -7,13 +7,15 @@ from aiohttp import ClientSession, web
 from . import db, routes, workers
 from .extractor import KMeansExtractor
 from .indexer import UnsplashIndexer
+from .middlewares import cors_middleware
+from .settings import config
 
 
 HERE = pathlib.Path(__file__).parent
 
 
-def init(setup_workers: bool = True, setup_indexing: bool = True) -> web.Application:
-    application = web.Application()
+def init(setup_workers: bool = True) -> web.Application:
+    application = web.Application(middlewares=[cors_middleware])
 
     routes.setup(application)
     aiojobs.aiohttp.setup(application)
@@ -24,7 +26,7 @@ def init(setup_workers: bool = True, setup_indexing: bool = True) -> web.Applica
     application.cleanup_ctx.append(db.setup)
     application.cleanup_ctx.append(setup_http_client)
 
-    if setup_indexing:
+    if config.colorific.image_indexing:
         application.cleanup_ctx.append(setup_image_indexing)
 
     return application

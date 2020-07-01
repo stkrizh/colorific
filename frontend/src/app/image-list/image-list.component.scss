@@ -1,0 +1,92 @@
+@import "../../variables.scss";
+
+
+.color-title {
+  i {
+    font-size: 1.5rem;
+    vertical-align: middle;
+    margin-right: 0.5em;
+  }
+  span {
+    vertical-align: middle;
+  }
+}
+
+.images-grid {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid $grey-light;
+
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.image-container {
+  box-sizing: border-box;
+  flex-basis: 48%;
+  height: 50vh;
+  position: relative;
+
+  @include mobile {
+    flex-basis: 100%;
+    height: 60vh;
+  }
+
+  @include widescreen {
+    flex-basis: 33%;
+    height: 40vh;
+  }
+
+  @include fullhd {
+    flex-basis: 24%;
+    height: 30vh;
+  }
+
+  .inner {
+    position: absolute;
+    left: 5px;
+    top: 5px;
+    bottom: 5px;
+    right: 5px;
+    background-position: center;
+    background-size: cover;
+    cursor: pointer;
+
+    .overlay {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.6);
+      opacity: 0;
+      transition: all 0.25s ease-out;
+      color: $primary;
+
+      i {
+        font-size: 2em;
+        transform-origin: 0 0;
+        transform: translateX(-1em);
+        transition: all 0.25s ease-out;
+      }
+    }
+
+    &:hover .overlay{
+      opacity: 1;
+
+      i {
+        transform: translateX(0);
+      }
+    }
+  }
+
+  .sizer {
+    margin-top: 100%;
+  }
+}
+
