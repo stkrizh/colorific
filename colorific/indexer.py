@@ -67,7 +67,7 @@ class ImageIndexer(ABC):
             except asyncio.CancelledError:
                 raise
             except Exception as error:
-                LOG.warning(error)
+                LOG.error(error, exc_info=sys.exc_info())
             else:
                 if not images:
                     return
@@ -84,7 +84,7 @@ class ImageIndexer(ABC):
             )
             colors: List[Color] = await self.extract_colors(image_data)
         except RetryError:
-            LOG.warning(
+            LOG.error(
                 f"Could not load image from {image.url_big}", exc_info=sys.exc_info()
             )
             return image
@@ -179,8 +179,8 @@ class UnsplashIndexer(ImageIndexer):
                 )
                 for item in data
             ]
+            LOG.info(f"Got {len(images)} for page {self.current_page}.")
             self.current_page += 1
-            LOG.debug(f"Got {len(images)} for page {self.current_page}.")
             return images
 
     async def commit(self, image: Image, colors: List[Color]) -> None:

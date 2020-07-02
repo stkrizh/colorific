@@ -22,7 +22,7 @@ export class ImageLoaderComponent implements OnInit, OnDestroy {
     imageFile: new FormControl(
       '',
       Validators.compose([
-        fileTypeValidator(['image/jpeg', 'image/png', 'image/gif']),
+        fileTypeValidator(['image/jpeg', 'image/png']),
         fileSizeValidator(MAX_IMAGE_FILE_SIZE_MB)
       ])
     ),
@@ -102,14 +102,14 @@ export class ImageLoaderComponent implements OnInit, OnDestroy {
   get formError(): string {
     if (this.imageFile.errors) {
       if (this.imageFile.errors.invalidFileType) {
-        return 'Допускаются только JPEG, PNG или GIF изображения';
+        return 'Only image/jpeg, image/png images are allowed.';
       }
       if (this.imageFile.errors.fileTooLarge) {
         let pipe = new FileSizePipe();
         let actualSize = pipe.transform(this.imageFile.errors.fileTooLarge['value']);
         return (
-          `Максимальный размер изображения ${MAX_IMAGE_FILE_SIZE_MB} Mb. `
-          + `Сейчас ${actualSize}`
+          `The image file is too large. Maximum file size is ${MAX_IMAGE_FILE_SIZE_MB} MB, `
+          + `but now it is ${actualSize}`
         )
       }
       throw new Error('Unexpected error with `imageFile` control');
@@ -152,18 +152,14 @@ export class ImageLoaderComponent implements OnInit, OnDestroy {
       },
       error => {
         this.isImageLoading = false;
+        let errorMessage = 'An error occured. Please try again later.';
         if (error.status == 400) {
-          if ('image' in error.error)
-            this.imageLoadErrorMessage = error.error.image[0];
-          else if ('url' in error.error)
-            this.imageLoadErrorMessage = error.error.url;
-          else {
-            this.imageLoadErrorMessage = 'Произошла ошибка. Попробуйте выбрать другое изображение.'
-          }
+          for (let key in error.error) {
+            this.imageLoadErrorMessage = error.error[key][0];
+          };
         } else {
-          this.imageLoadErrorMessage = (
-            'Произошла ошибка. Попробуйте повторить позднее.'
-          )
+          this.imageLoadErrorMessage = errorMessage;
+          console.log(error);
         }
       }
     );

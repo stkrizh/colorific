@@ -5,7 +5,6 @@ import { ImageDetailComponent } from "./image-detail/image-detail.component";
 import { ImageListComponent } from "./image-list/image-list.component";
 import { ImageLoaderComponent } from "./image-loader/image-loader.component";
 import { NotFoundComponent } from "./not-found/not-found.component";
-import { HowItWorksComponent } from './how-it-works/how-it-works.component';
 
 
 const routes: Routes = [
@@ -31,10 +30,6 @@ const routes: Routes = [
     component: ImageListComponent,
   },
   {
-    path: "how-it-works",
-    component: HowItWorksComponent
-  },
-  {
     path: "**",
     component: NotFoundComponent
   }
@@ -53,7 +48,6 @@ const routerOptions: ExtraOptions = {
 export class AppRoutingModule { }
 
 export const routingComponents = [
-  HowItWorksComponent,
   ImageDetailComponent,
   ImageListComponent,
   ImageLoaderComponent,

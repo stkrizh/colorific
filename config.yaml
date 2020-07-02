@@ -15,7 +15,7 @@ default:
     http_client_retrying_wait_time: 3
     http_client_timeout: 30
     image_indexing: !ENV ${IMAGE_INDEXING:bool}
-    image_indexing_interval_sec: 120
+    image_indexing_interval_sec: 90
     image_max_size_bytes: 5242880 # 5 Mb
     image_max_height: 8000
     image_max_width: 8000
