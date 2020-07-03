@@ -23,7 +23,7 @@ jobs:
             - .venv
       - run:
           name: Run tests
-          command: source .venv/bin/activate && pytest
+          command: source .venv/bin/activate && make test
           environment:
             POSTGRES_TEST_USER: postgres
             POSTGRES_TEST_PASSWORD: test
@@ -31,6 +31,8 @@ jobs:
             POSTGRES_TEST_HOST: localhost
             POSTGRES_TEST_PORT: 5432
             OMP_NUM_THREADS: 1
+            IMAGE_INDEXING: false
+            CORS_ALLOW_ORIGIN: '*'
 
 workflows:
   main:

@@ -1,0 +1,19 @@
+/* You can add global styles to this file, and also import other style files */
+// @import "../node_modules/bulma/sass/utilities/initial-variables.sass";
+
+@import './variables.scss';
+
+@import url('https://fonts.googleapis.com/css?family=PT+Sans&display=swap');
+@import '../node_modules/@fortawesome/fontawesome-free/css/all.min.css';
+@import '../node_modules/bulma/bulma.sass';
+
+html {
+  height: 100%;
+}
+
+body {
+  min-height: 100%;
+  background: rgb(235, 236, 240);
+  position: relative;
+  padding-bottom: 120px;
+}

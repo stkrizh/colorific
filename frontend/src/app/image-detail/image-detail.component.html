@@ -1,0 +1,24 @@
+<div *ngIf="imageDetail" class="image-detail-container" (click)="close()">
+  <div
+    class="image"
+  >
+    <a
+      class="button is-rounded is-small"
+      href="{{ imageDetail.details_url }}"
+      target="blank"
+    >
+      <span>Оригинал</span>
+      <span class="icon">
+        <i class="fas fa-external-link-alt"></i>
+      </span>
+    </a>
+    <img src="{{ imageDetail.regular_url }}" alt="" (click)="$event.stopPropagation()">
+  </div>
+  <div class="palette">
+    <app-color-palette
+      [colors]="imageDetail.colors"
+      (click)="$event.stopPropagation()"
+      (colorSelected)="showImageList($event)"
+    ></app-color-palette>
+  </div>
+</div>

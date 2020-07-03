@@ -40,16 +40,20 @@ class UnsplashConfig:
     access_key: str
     end_page: int
     images_per_page: int
-    indexing_interval_sec: int
     start_page: int
 
 
 @dataclass(frozen=True)
 class ColorificConfig:
     allowed_image_content_types: List[str]
+    cors_allow_origin: str
     http_client_retrying_max_attempts: int
     http_client_retrying_wait_time: int
     http_client_timeout: int
+    image_indexing: bool
+    image_indexing_cyclic: bool
+    image_indexing_interval_sec: int
+    image_indexing_rewrite_existing: bool
     image_max_size_bytes: int
     image_max_height: int
     image_max_width: int
@@ -75,7 +79,7 @@ def parse_config(
     var: !ENV ${ENV_VAR}
     """
     # pattern for global vars: look for ${word}
-    pattern = re.compile(r".*?\${(\w+)}.*?")
+    pattern = re.compile(r".*?\${([\w:]+)}.*?")
     loader = yaml.SafeLoader
 
     # the tag will be used to mark where to start searching for the pattern
@@ -104,13 +108,26 @@ def _constructor_env_variables(pattern: re.Pattern):
     Extracts the environment variable from the node's value.
     """
 
+    types = {
+        "bool": bool,
+        "int": int,
+        "float": float,
+        "str": str,
+    }
+
     def inner(loader: yaml.Loader, node):
         value = loader.construct_scalar(node)
-        for env_name in pattern.findall(value):
+        for env_code in pattern.findall(value):
+            env_name, _, env_type = env_code.partition(":")
             env = os.environ.get(env_name)
             if not env:
                 return None
-            value = value.replace(f"${{{env_name}}}", env)
+            value = value.replace(f"${{{env_code}}}", env)
+
+            if env_type == "bool":
+                return value.lower().strip() == "true"
+            return types.get(env_type, str)(value)
+
         return value
 
     return inner

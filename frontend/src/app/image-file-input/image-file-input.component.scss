@@ -1,0 +1,7 @@
+@import "./node_modules/bulma/sass/utilities/_all.sass";
+
+.file-label:hover {
+  .file-name, .file-cta {
+    border-color: $grey-light;
+  }
+}

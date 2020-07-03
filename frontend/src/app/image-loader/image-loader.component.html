@@ -1,0 +1,81 @@
+<div class="section">
+
+  <div class="container intro" *ngIf="form.pristine">
+    <h1 class="subtitle is-5 has-text-centered">
+      Image color extraction
+    </h1>
+    <p class="has-text-centered is-grey">
+      The app will display a color palette for all the colors identified in your image. 
+      Color extraction works for JPEG and PNG images.
+    </p>
+  </div>
+
+  <form [formGroup]="form">
+    <div class="container inputs-container is-flex-desktop">
+      <!-- File Input -->
+      <div class="input-wrapper">
+        <image-file-input [formControl]="imageFile"></image-file-input>
+      </div>
+      <!-- End of File Input -->
+
+      <!-- URL Input -->
+      <div class="input-wrapper">
+        <div class="field">
+          <div class="control has-icons-left">
+            <span class="icon is-left">
+              <i class="far fa-image"></i>
+            </span>
+            <input
+              class="input"
+              type="text"
+              placeholder="Or enter image URL"
+              [formControl]="imageURL"
+            >
+          </div>
+        </div>
+      </div>
+      <!-- End of URL Input -->
+    </div>
+
+    <div class="container error-message" *ngIf="(form.invalid && form.dirty) || imageLoadErrorMessage">
+      <article class="message is-danger">
+        <div class="message-body" *ngIf="(form.invalid && form.dirty)">{{ formError }}</div>
+        <div class="message-body" *ngIf="imageLoadErrorMessage">{{ imageLoadErrorMessage }}</div>
+      </article>
+    </div>
+
+    <div *ngIf="isImageSelected" class="container image-loader-container">
+      <div class="image-loader">
+        <div class="buttons-container">
+          <button
+            (click)="submitForm()"
+            [class.is-loading]="isImageLoading"
+            [disabled]="isImageLoading"
+            class="button is-primary is-outlined is-rounded"
+          >Upload</button>
+          <button
+            (click)="resetForm()"
+            [disabled]="isImageLoading"
+            type="reset"
+            class="delete is-large"
+          ></button>
+        </div>
+        <div class="image-preview-container">
+          <div [style.background-image]="imagePreviewBackgroundURL" class="image-preview"></div>
+        </div>
+      </div>
+
+      <div class="palette-container" *ngIf="colorsResponse">
+        <app-color-palette
+          [colors]="colorsResponse.colors"
+          (colorSelected)="showImageList($event)"
+        ></app-color-palette>
+      </div>
+    </div>
+  </form>
+
+</div>
+
+<div class="section" *ngIf="rgb">
+  <app-image-list [rgb]="rgb"></app-image-list>
+</div>

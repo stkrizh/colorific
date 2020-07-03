@@ -10,21 +10,25 @@ default:
     allowed_image_content_types:
       - image/jpeg
       - image/png
+    cors_allow_origin: !ENV ${CORS_ALLOW_ORIGIN}
     http_client_retrying_max_attempts: 5
     http_client_retrying_wait_time: 3
     http_client_timeout: 30
+    image_indexing: !ENV ${IMAGE_INDEXING:bool}
+    image_indexing_cyclic: true
+    image_indexing_interval_sec: 600
+    image_indexing_rewrite_existing: false
     image_max_size_bytes: 5242880 # 5 Mb
-    image_max_height: 5000
-    image_max_width: 5000
+    image_max_height: 8000
+    image_max_width: 8000
     image_min_height: 50
     image_min_width: 50
     pool_exec_size: 2
 
   unsplash:
     access_key: !ENV ${UNSPLASH_API_ACCESS_KEY}
-    end_page: -1
+    end_page: 300
     images_per_page: 30
-    indexing_interval_sec: 120
     start_page: 1
 
 
@@ -40,6 +44,7 @@ test:
     http_client_retrying_max_attempts: 2
     http_client_retrying_wait_time: 0.5
     http_client_timeout: 1
+    image_indexing: false
     image_max_size_bytes: 1500000
     image_max_height: 1000
     image_max_width: 1000
