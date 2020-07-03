@@ -23,7 +23,7 @@ jobs:
             - .venv
       - run:
           name: Run tests
-          command: source .venv/bin/activate && pytest
+          command: source .venv/bin/activate && pytest tests
           environment:
             POSTGRES_TEST_USER: postgres
             POSTGRES_TEST_PASSWORD: test

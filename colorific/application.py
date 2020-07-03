@@ -2,7 +2,7 @@ import asyncio
 import pathlib
 
 import aiojobs.aiohttp
-from aiohttp import ClientSession, web
+from aiohttp import ClientSession, TCPConnector, web
 
 from . import db, routes, workers
 from .extractor import KMeansExtractor
@@ -33,7 +33,9 @@ def init(setup_workers: bool = True) -> web.Application:
 
 
 async def setup_http_client(app):
-    app["http_client"] = ClientSession()
+    app["http_client"] = ClientSession(
+        connector=TCPConnector(force_close=True, enable_cleanup_closed=True)
+    )
     yield
     await app["http_client"].close()
 
@@ -42,8 +44,8 @@ async def setup_image_indexing(app):
     color_extractor = KMeansExtractor()
     indexer = UnsplashIndexer(
         color_extractor=color_extractor,
-        http_client=app["http_client"],
         executor=app["executor"],
+        http_client=app["http_client"],
         db_pool=app["db"],
     )
     asyncio.create_task(indexer.run())

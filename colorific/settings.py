@@ -51,7 +51,9 @@ class ColorificConfig:
     http_client_retrying_wait_time: int
     http_client_timeout: int
     image_indexing: bool
+    image_indexing_cyclic: bool
     image_indexing_interval_sec: int
+    image_indexing_rewrite_existing: bool
     image_max_size_bytes: int
     image_max_height: int
     image_max_width: int

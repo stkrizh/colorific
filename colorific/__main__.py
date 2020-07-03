@@ -19,7 +19,10 @@ dictConfig(
                 "level": logging.DEBUG,
             }
         },
-        "loggers": {"colorific": {"handlers": ["h"], "level": logging.DEBUG}},
+        "loggers": {
+            "colorific": {"handlers": ["h"], "level": logging.INFO},
+            "aiohttp": {"handlers": ["h"], "level": logging.INFO},
+        },
     }
 )
 
