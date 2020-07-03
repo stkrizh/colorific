@@ -32,7 +32,7 @@ jobs:
             POSTGRES_TEST_PORT: 5432
             OMP_NUM_THREADS: 1
             IMAGE_INDEXING: false
-            CORS_ALLOW_ORIGIN: *
+            CORS_ALLOW_ORIGIN: '*'
 
 workflows:
   main:
