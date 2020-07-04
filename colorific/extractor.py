@@ -33,10 +33,14 @@ class Color:
     b: float
     percentage: float
 
+    @classmethod
+    def from_rgb(cls, r: int, g: int, b: int, percentage: float = 1.0) -> "Color":
+        lab: np.ndarray = rgb2lab(np.array([r, g, b], dtype=np.float64) / 255)
+        return cls(*lab, percentage)
+
     def __post_init__(self):
-        rgb: np.ndarray = lab2rgb(np.array([self.L, self.a, self.b], dtype=np.float32))
+        rgb: np.ndarray = lab2rgb(np.array([self.L, self.a, self.b], dtype=np.float64))
         self.rgb: List[int] = [int(np.round(value * 255)) for value in rgb]
-        self.r, self.g, self.b = self.rgb
 
 
 class ColorExtractor(ABC):
