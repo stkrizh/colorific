@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 from PIL import Image
 
-from colorific.extractor import KMeansExtractor, Color
+from colorific.extractor import Color, KMeansExtractor
 
 
 @pytest.mark.parametrize(
@@ -53,7 +53,7 @@ def test_small_image():
         (128, 128, 128),
         (1, 1, 1),
         (78, 122, 254),
-        (254, 254, 254)
+        (254, 254, 254),
     ],
 )
 def test_color(r, g, b):

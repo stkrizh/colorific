@@ -1,46 +1,21 @@
 from abc import ABC, abstractmethod
 from collections import Counter
-from dataclasses import dataclass
 from io import BytesIO
 from itertools import combinations
 from typing import Dict, List
 
 import numpy as np
 from PIL import Image
-from skimage.color import lab2rgb, rgb2lab
+from skimage.color import rgb2lab
 from sklearn.cluster import MiniBatchKMeans
 
 from .image_loader import open_image
+from .types import Color
 
 
 COLORS_DIFFERENCE_THRESHOLD = 20
 IMAGE_THUMBNAIL_SIZE = (300, 300)
 MAX_NUMBER_OF_CLUSTERS = 12
-
-
-@dataclass
-class Color:
-    """
-    Represents a color in CIELAB color space.
-
-    See also
-    --------
-    https://en.wikipedia.org/wiki/CIELAB_color_space
-    """
-
-    L: float
-    a: float
-    b: float
-    percentage: float
-
-    @classmethod
-    def from_rgb(cls, r: int, g: int, b: int, percentage: float = 1.0) -> "Color":
-        lab: np.ndarray = rgb2lab(np.array([r, g, b], dtype=np.float64) / 255)
-        return cls(*lab, percentage)
-
-    def __post_init__(self):
-        rgb: np.ndarray = lab2rgb(np.array([self.L, self.a, self.b], dtype=np.float64))
-        self.rgb: List[int] = [int(np.round(value * 255)) for value in rgb]
 
 
 class ColorExtractor(ABC):
@@ -62,7 +37,7 @@ class ColorExtractor(ABC):
 
 class KMeansExtractor(ColorExtractor):
     """
-    Exctract main colors with KMeans clustering algorithm.
+    Extract main colors with KMeans clustering algorithm.
 
     See also
     --------

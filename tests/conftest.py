@@ -16,9 +16,9 @@ from colorific import db as colorific_db
 
 
 @pytest.fixture(scope="session", autouse=True)
-def sync_db():
+def init_db():
     """
-    Synchronous DB connection.
+    Create DB tables.
     """
     engine = colorific_db.create_engine()
     colorific_db.METADATA.drop_all(engine)

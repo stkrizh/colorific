@@ -3,7 +3,6 @@ import logging
 import sys
 from abc import ABC, abstractmethod
 from concurrent.futures import Executor
-from dataclasses import dataclass
 from itertools import count, cycle
 from typing import AsyncIterable, Iterable, List, Optional, Tuple
 
@@ -20,18 +19,12 @@ from tenacity import (
 )
 
 from . import db, image_loader
-from .extractor import Color, ColorExtractor
+from .extractor import ColorExtractor
 from .settings import config
+from .types import Color, Image
 
 
 LOG = logging.getLogger(__name__)
-
-
-@dataclass
-class Image:
-    origin: str
-    url_big: str
-    url_thumb: str
 
 
 class ImageIndexer(ABC):
