@@ -4,15 +4,15 @@
   >
     <a
       class="button is-rounded is-small"
-      href="{{ imageDetail.details_url }}"
+      href="{{ imageDetail.image.origin }}"
       target="blank"
     >
-      <span>Оригинал</span>
+      <span>Original image</span>
       <span class="icon">
         <i class="fas fa-external-link-alt"></i>
       </span>
     </a>
-    <img src="{{ imageDetail.regular_url }}" alt="" (click)="$event.stopPropagation()">
+    <img src="{{ imageDetail.image.url_big }}" alt="" (click)="$event.stopPropagation()">
   </div>
   <div class="palette">
     <app-color-palette
