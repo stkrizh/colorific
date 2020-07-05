@@ -9,7 +9,7 @@ from .types import Color, Image
 async def get_images_by_color(
     connection: SAConnection,
     color: Color,
-    image_count: int = 30,
+    image_count: int = 36,
     offset: int = 0,
     percentage_weight: float = 0.2,
 ) -> List[Image]:

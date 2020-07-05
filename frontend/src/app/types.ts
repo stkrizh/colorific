@@ -49,29 +49,30 @@ export class ColorsResponse implements ColorsResponseInterface {
 
 interface ImageDetailInterface {
   id: string
-  details_url: string
-  regular_url: string
-  small_url: string
-  has_colors: boolean
+  origin: string
+  url_big: string
+  url_thumb: string
 }
 
 
-export class ImageDetailResponse
-  extends ColorsResponse
-  implements ImageDetailInterface {
+export interface ImageDetailResponseInterface {
+  image: ImageDetailInterface
+  colors: ColorInterface[]
+}
 
-  id: string
-  details_url: string
-  regular_url: string
-  small_url: string
-  has_colors: boolean
 
-  constructor(data: any) {
-    super(data);
-    this.id = data.id
-    this.details_url = data.details_url
-    this.regular_url = data.regular_url
-    this.small_url = data.small_url
-    this.has_colors = data.has_colors
+export class ImageDetailResponse implements ImageDetailResponseInterface {
+
+  image: ImageDetailInterface
+  colors: Color[]
+
+  constructor(data: ImageDetailResponseInterface) {
+    this.image = data.image;
+    this.colors = new Array<Color>();
+    for (let index in data.colors)
+      this.colors.push(new Color(data.colors[index]));
+    this.colors.sort(
+      (a: Color, b: Color) => b.percentage - a.percentage
+    );
   }
 }

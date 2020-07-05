@@ -4,7 +4,7 @@ import { HttpClient } from "@angular/common/http";
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { StateService } from "../state.service";
-import { ImageDetailResponse, Color } from "../types";
+import { ImageDetailResponse, ImageDetailResponseInterface, Color } from "../types";
 
 
 @Component({
@@ -43,11 +43,11 @@ export class ImageDetailComponent implements OnInit {
 
   fetchImageDetail() {
     this.state.showLoaderOverlay();
-    const url = `http://localhost:8000/image/${this.imageID}`;
+    const url = `http://localhost:8080/images/${this.imageID}`;
     this.http.get(url).subscribe(
       (response) => {
         this.state.turnOffLoaderOverlay();
-        this.imageDetail = new ImageDetailResponse(response);
+        this.imageDetail = new ImageDetailResponse(<ImageDetailResponseInterface>response);
       },
       (error) => {
         this.state.turnOffLoaderOverlay();
@@ -60,7 +60,7 @@ export class ImageDetailComponent implements OnInit {
     if (this.imageDetail === null)
       throw new Error('imageDetail must be defined');
     return this.sanitizer.bypassSecurityTrustStyle(
-      `url(${this.imageDetail.regular_url})`
+      `url(${this.imageDetail.image.url_big})`
     );
   }
 

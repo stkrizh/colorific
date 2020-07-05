@@ -22,7 +22,7 @@ const routes: Routes = [
         return {
           consumed: url,
           posParams: {
-            rgb: new UrlSegment(url[1].path, {})
+            color: new UrlSegment(url[1].path, {})
           }
         };
       }      return null;
