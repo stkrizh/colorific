@@ -7,7 +7,7 @@ from .settings import config
 async def cors_middleware(request, handler):
     cors_headers = {
         "Access-Control-Allow-Origin": config.colorific.cors_allow_origin,
-        "Access-Control-Allow-Methods": "PUT, OPTIONS",
+        "Access-Control-Allow-Methods": "GET, PUT, OPTIONS",
         "Access-Control-Allow-Headers": "*",
         "Access-Control-Max-Age": "86400",
     }

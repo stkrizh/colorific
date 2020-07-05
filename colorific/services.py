@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 import sqlalchemy as sa
 from aiopg.sa import SAConnection
@@ -62,3 +62,44 @@ async def get_images_by_color(
         )
 
     return images
+
+
+async def get_image(connection: SAConnection, image_id: int) -> Optional[Image]:
+    """
+    Retrieve one image from DB. Return `None` if there is no
+    image with `image_id` primary key.
+    """
+    sql = sa.text(
+        """
+        SELECT * FROM image WHERE id = :image_id;
+        """
+    )
+    cursor = await connection.execute(sql, {"image_id": image_id})
+    row = await cursor.fetchone()
+
+    if row is None:
+        return None
+
+    return Image(
+        id=row["id"],
+        origin=row["origin"],
+        url_big=row["url_big"],
+        url_thumb=row["url_thumb"],
+    )
+
+
+async def get_image_colors(connection: SAConnection, image_id: int) -> List[Color]:
+    """
+    Retrieve a list of image colors from DB.
+    """
+    sql = sa.text(
+        """
+        SELECT * FROM image_color WHERE image_id = :image_id;
+        """
+    )
+    colors: List[Color] = []
+    async for row in connection.execute(sql, {"image_id": image_id}):
+        color = Color(L=row["L"], a=row["a"], b=row["b"], percentage=row["percentage"])
+        colors.append(color)
+
+    return colors

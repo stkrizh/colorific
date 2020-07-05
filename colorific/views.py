@@ -13,10 +13,12 @@ from .extractor import Color, KMeansExtractor
 from .schema import (
     ColorRequestSchema,
     ColorSchema,
+    ImageDetailResponseSchema,
     ImageResponseSchema,
     UploadURLRequestSchema,
 )
-from .services import get_images_by_color
+from .services import get_image, get_image_colors, get_images_by_color
+from .types import Image
 
 
 LOG = logging.getLogger(__file__)
@@ -123,3 +125,22 @@ class ImageListView(View, ViewMixin):
 
         output_schema = ImageResponseSchema()
         return json_response(output_schema.dump(images, many=True))
+
+
+class ImageDetailView(View, ViewMixin):
+    """
+    Detail information about specific image.
+    """
+
+    async def get(self) -> Response:
+        async with self.request.app["db"].acquire() as connection:
+            image_id: int = self.request.match_info["image_id"]
+            image: Optional[Image] = await get_image(connection, image_id)
+
+            if image is None:
+                return json_response({"image": "Not Found."}, status=404)
+
+            colors: List[Color] = await get_image_colors(connection, image_id)
+
+        output_schema = ImageDetailResponseSchema()
+        return json_response(output_schema.dump({"image": image, "colors": colors}))

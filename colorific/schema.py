@@ -42,5 +42,10 @@ class ImageResponseSchema(Schema):
     id = fields.Integer()
 
 
+class ImageDetailResponseSchema(Schema):
+    image = fields.Nested(ImageResponseSchema)
+    colors = fields.Nested(ColorSchema, many=True)
+
+
 class UploadURLRequestSchema(Schema):
     url = fields.URL(schemes={"http", "https"})
