@@ -51,6 +51,11 @@ async def test_correct_request(client, get_image_data):
         assert isinstance(response_json, list)
         assert len(response_json) == 1
         mock.assert_awaited_once()
+        color = response_json[0]
+        assert color["percentage"] == 1
+        assert "red" in color
+        assert "green" in color
+        assert "blue" in color
 
 
 @pytest.mark.parametrize(

@@ -46,6 +46,11 @@ async def test_valid_image_types(client, get_image_data, content_type, image_for
     response_json = await response.json()
     assert isinstance(response_json, list)
     assert len(response_json) == 1
+    color = response_json[0]
+    assert color["percentage"] == 1
+    assert "red" in color
+    assert "green" in color
+    assert "blue" in color
 
 
 @pytest.mark.parametrize(

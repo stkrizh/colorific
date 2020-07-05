@@ -39,7 +39,7 @@ export class ImageLoaderComponent implements OnInit, OnDestroy {
   public imageLoadErrorMessage: string | null = null;
   public imagePreviewURL: string | null = null;
   public isImageLoading: boolean = false;
-  public rgb: string | null = null;
+  public color: string | null = null;
 
   private formStatusObserver: Subscription;
   private imageFileObserver: Subscription;
@@ -133,7 +133,7 @@ export class ImageLoaderComponent implements OnInit, OnDestroy {
   resetForm() {
     this.colorsResponse = null;
     this.imageLoadErrorMessage = null;
-    this.rgb = null;
+    this.color = null;
   }
 
   submitForm() {
@@ -166,7 +166,7 @@ export class ImageLoaderComponent implements OnInit, OnDestroy {
   }
 
   showImageList(color: Color) {
-    this.rgb = color.toHex();
+    this.color = color.toHex();
   }
 }
 

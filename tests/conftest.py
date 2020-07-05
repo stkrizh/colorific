@@ -13,12 +13,13 @@ settings.setup("test")
 
 from colorific import application
 from colorific import db as colorific_db
+from colorific.types import Color
 
 
 @pytest.fixture(scope="session", autouse=True)
-def sync_db():
+def sync_db_engine():
     """
-    Synchronous DB connection.
+    Create DB tables with synchronous DB connection.
     """
     engine = colorific_db.create_engine()
     colorific_db.METADATA.drop_all(engine)
@@ -119,3 +120,39 @@ def get_image_data(get_one_color_image):
         return data
 
     return _get_image_data
+
+
+@pytest.fixture(scope="session", autouse=True)
+def create_images(sync_db_engine):
+    sync_db_engine.execute(
+        """
+        INSERT INTO image (id, origin, url_big, url_thumb) VALUES
+        (1, 'a', 'a', 'a'),
+        (2, 'b', 'b', 'b'),
+        (3, 'c', 'c', 'c'),
+        (4, 'd', 'd', 'd'),
+        (5, 'e', 'e', 'e');
+        """
+    )
+
+    colors = {
+        1: [(255, 0, 0, 0.5), (0, 0, 255, 0.5)],
+        2: [(0, 0, 0, 1)],
+        3: [(255, 255, 255, 1)],
+        4: [(0, 255, 0, 0.7), (0, 128, 0, 0.3)],
+        5: [(255, 0, 0, 0.6), (0, 0, 255, 0.2), (0, 128, 0, 0.2)],
+    }
+    sql: List[str] = []
+    for image_id, image_colors in colors.items():
+        for rgb in image_colors:
+            color = Color.from_rgb(*rgb)
+            sql.append(
+                f"({image_id}, {color.L}, {color.a}, {color.b}, {color.percentage})"
+            )
+
+    sync_db_engine.execute(
+        f"""
+        INSERT INTO image_color (image_id, "L", a, b, percentage) 
+        VALUES {', '.join(sql)};
+        """
+    )

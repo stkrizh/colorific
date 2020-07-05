@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 from PIL import Image
 
-from colorific.extractor import KMeansExtractor
+from colorific.extractor import Color, KMeansExtractor
 
 
 @pytest.mark.parametrize(
@@ -38,3 +38,24 @@ def test_small_image():
     extractor = KMeansExtractor()
     colors = extractor.extract(image)
     assert len(colors) == 1
+
+
+@pytest.mark.parametrize(
+    "r, g, b",
+    [
+        (0, 0, 0),
+        (255, 0, 0),
+        (0, 255, 0),
+        (0, 0, 255),
+        (255, 0, 255),
+        (255, 255, 255),
+        (17, 156, 251),
+        (128, 128, 128),
+        (1, 1, 1),
+        (78, 122, 254),
+        (254, 254, 254),
+    ],
+)
+def test_color(r, g, b):
+    color = Color.from_rgb(r, g, b)
+    assert color.rgb == [r, g, b]

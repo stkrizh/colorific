@@ -10,13 +10,34 @@ from tenacity import RetryError
 
 from . import image_loader
 from .extractor import Color, KMeansExtractor
-from .schema import ColorSchema, UploadURLRequestSchema
+from .schema import (
+    ColorRequestSchema,
+    ColorSchema,
+    ImageResponseSchema,
+    UploadURLRequestSchema,
+)
+from .services import get_images_by_color
 
 
 LOG = logging.getLogger(__file__)
 
 
-class ColorExtractionView(View):
+class ViewMixin:
+    """
+    Mixin with a set of helper methods.
+    """
+
+    def bad_request(self, body: Optional[dict] = None, **kwargs) -> HTTPBadRequest:
+        """
+        Return HTTP 400 response with JSON-encoded body.
+        """
+        return HTTPBadRequest(
+            text=json.dumps(body if body is not None else kwargs),
+            content_type="application/json",
+        )
+
+
+class ColorExtractionView(View, ViewMixin):
     """
     Main API-endpoint for color extraction.
     """
@@ -84,11 +105,21 @@ class ColorExtractionView(View):
         schema = ColorSchema()
         return json_response(schema.dump(colors, many=True))
 
-    def bad_request(self, body: Optional[dict] = None, **kwargs) -> HTTPBadRequest:
-        """
-        Return HTTP 400 response with JSON-encoded body.
-        """
-        return HTTPBadRequest(
-            text=json.dumps(body if body is not None else kwargs),
-            content_type="application/json",
-        )
+
+class ImageListView(View, ViewMixin):
+    """
+    Search images by color.
+    """
+
+    async def get(self) -> Response:
+        input_schema = ColorRequestSchema()
+        try:
+            color: Color = input_schema.load(self.request.query)
+        except ValidationError as error:
+            raise self.bad_request(**error.normalized_messages())
+
+        async with self.request.app["db"].acquire() as connection:
+            images = await get_images_by_color(connection, color)
+
+        output_schema = ImageResponseSchema()
+        return json_response(output_schema.dump(images, many=True))

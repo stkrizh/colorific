@@ -94,5 +94,5 @@ lint: .isort-check .black-check .mypy .flake
 test: .check-venv
 	@echo "-----------------------"
 	@echo "--- Running tests"
-	pytest -x tests
+	pytest -x
 	$(SUCCESS)
