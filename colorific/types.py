@@ -28,6 +28,7 @@ class Color:
     def __post_init__(self):
         rgb: np.ndarray = lab2rgb(np.array([self.L, self.a, self.b], dtype=np.float64))
         self.rgb: List[int] = [int(np.round(value * 255)) for value in rgb]
+        self.red, self.green, self.blue = self.rgb
 
 
 @dataclass

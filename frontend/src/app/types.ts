@@ -1,28 +1,28 @@
 interface ColorInterface {
-  r: number;
-  g: number;
-  b: number;
+  red: number;
+  green: number;
+  blue: number;
   percentage: number;
 }
 
 
 export class Color implements ColorInterface {
-  r: number;
-  g: number;
-  b: number;
+  red: number;
+  green: number;
+  blue: number;
   percentage: number;
 
   constructor(data: ColorInterface) {
-    this.r = data.r;
-    this.g = data.g;
-    this.b = data.b;
+    this.red = data.red;
+    this.green = data.green;
+    this.blue = data.blue;
     this.percentage = data.percentage;
   }
 
   toHex(): string {
-    return `${this.r.toString(16).padStart(2, "0")}` +
-      `${this.g.toString(16).padStart(2, "0")}` +
-      `${this.b.toString(16).padStart(2, "0")}`
+    return `${this.red.toString(16).padStart(2, "0")}` +
+      `${this.green.toString(16).padStart(2, "0")}` +
+      `${this.blue.toString(16).padStart(2, "0")}`
   }
 }
 

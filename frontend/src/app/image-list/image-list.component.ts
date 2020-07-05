@@ -6,18 +6,9 @@ import { StateService } from "../state.service";
 
 interface Image {
   id: string
-  details_url: string
-  regular_url: string;
-  small_url: string;
-  has_colors: boolean;
-}
-
-
-interface ImageListResponse {
-  count: number
-  next: string | null
-  previous: string | null
-  results: Array<Image>
+  origin: string
+  url_big: string;
+  url_thumb: string;
 }
 
 
@@ -27,12 +18,8 @@ interface ImageListResponse {
   styleUrls: ["./image-list.component.scss"]
 })
 export class ImageListComponent implements OnInit, OnChanges {
-  @Input() rgb: string | null;
-
-  count: number = 0;
-  next_url: string | null = null;
-  previous_url: string | null = null;
-  images: Array<Image> = [];
+  @Input() color: string | null;
+  images: Image[] = [];
 
   constructor(
     private http: HttpClient,
@@ -42,30 +29,27 @@ export class ImageListComponent implements OnInit, OnChanges {
 
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
-      let routerRGB = params.get("rgb");
-      if (routerRGB !== null) {
-        this.rgb = routerRGB;
+      let routerColor = params.get("color");
+      if (routerColor !== null) {
+        this.color = routerColor;
         this.fetchImages();
       }
     })
   }
 
   ngOnChanges(changes: {[propKey: string]: SimpleChange}) {
-    if ("rgb" in changes)
+    if ("color" in changes)
       this.fetchImages();
   }
 
   fetchImages() {
     this.state.showLoaderOverlay();
-    const url = `http://localhost:8000/images?rgb=${this.rgb}`;
+    const url = `http://localhost:8080/images?color=${this.color}`;
     this.http.get(url).subscribe(
       (response) => {
         this.state.turnOffLoaderOverlay();
-        const imagesResponse = <ImageListResponse>response;
-        this.images = imagesResponse.results;
-        this.count = imagesResponse.count;
-        this.next_url = imagesResponse.next;
-        this.previous_url = imagesResponse.previous;
+        const imagesResponse = <Image[]>response;
+        this.images = imagesResponse;
       },
       (error) => {
         this.state.turnOffLoaderOverlay();

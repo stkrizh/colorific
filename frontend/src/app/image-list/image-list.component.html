@@ -1,8 +1,8 @@
 <div class="section" *ngIf="images">
   <div class="container">
     <h1 class="has-text-grey-light color-title">
-      <i class="fas fa-circle" [style.color]="'#' + rgb"></i>
-      <span>Изображения цвета #{{ rgb }}</span>
+      <i class="fas fa-circle" [style.color]="'#' + color"></i>
+      <span>Images by color #{{ color }}</span>
     </h1>
   </div>
 
@@ -10,7 +10,7 @@
     <div class="images-grid">
       <div class="image-container" *ngFor="let image of images">
         <div class="inner"
-          [style.background-image]="'url(' + image.regular_url + ')'"
+          [style.background-image]="'url(' + image.url_thumb + ')'"
           (click)="showImageDetail(image.id)"
         >
           <div class="overlay"><i class="fas fa-search"></i></div>

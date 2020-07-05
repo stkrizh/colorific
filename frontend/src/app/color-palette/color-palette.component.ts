@@ -20,7 +20,7 @@ export class ColorPaletteComponent implements OnInit {
 
   convertColorToBackground(color: Color): SafeStyle {
     return this._sanitizer.bypassSecurityTrustStyle(
-      `rgb(${color.r}, ${color.g}, ${color.b})`
+      `rgb(${color.red}, ${color.green}, ${color.blue})`
     )
   }
 

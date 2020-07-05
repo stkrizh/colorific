@@ -5,7 +5,7 @@ from marshmallow import Schema, ValidationError, fields, post_load, validates
 from .types import Color
 
 
-COLOR_PATTERN = re.compile(r"^#[0-9a-f]{6}$")
+COLOR_PATTERN = re.compile(r"^[0-9a-f]{6}$")
 
 
 class ColorRequestSchema(Schema):
@@ -24,14 +24,14 @@ class ColorRequestSchema(Schema):
     def make(self, data, *args, **kwargs) -> Color:
         rgb: str = data["color"]
         return Color.from_rgb(
-            r=int(rgb[1:3], 16), g=int(rgb[3:5], 16), b=int(rgb[5:7], 16)
+            r=int(rgb[0:2], 16), g=int(rgb[2:4], 16), b=int(rgb[4:6], 16)
         )
 
 
 class ColorSchema(Schema):
-    r = fields.Integer()
-    g = fields.Integer()
-    b = fields.Integer()
+    red = fields.Integer()
+    green = fields.Integer()
+    blue = fields.Integer()
     percentage = fields.Float()
 
 
