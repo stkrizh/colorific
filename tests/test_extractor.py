@@ -3,6 +3,7 @@ import pytest
 from PIL import Image
 
 from colorific.extractor import Color, KMeansExtractor
+from colorific.settings import config
 
 
 @pytest.mark.parametrize(
@@ -34,7 +35,11 @@ def test_four_color_image(get_four_color_image):
 
 
 def test_small_image():
-    image = Image.new("RGB", (1, 1), color=(0, 255, 0))
+    image = Image.new(
+        "RGB",
+        (config.colorific.image_min_width, config.colorific.image_min_height),
+        color=(0, 255, 0),
+    )
     extractor = KMeansExtractor()
     colors = extractor.extract(image)
     assert len(colors) == 1
