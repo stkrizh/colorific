@@ -7,7 +7,7 @@ from typing import Dict, List
 import numpy as np
 from PIL import Image
 from skimage.color import rgb2lab
-from sklearn.cluster import MiniBatchKMeans
+from sklearn.cluster import KMeans
 
 from .image_loader import open_image
 from .types import Color
@@ -49,7 +49,7 @@ class KMeansExtractor(ColorExtractor):
         Entry point for color palette extraction.
         """
         lab_image_data = self.prepare_image_data(image)
-        clustering = MiniBatchKMeans(n_clusters=MAX_NUMBER_OF_CLUSTERS)
+        clustering = KMeans(n_clusters=MAX_NUMBER_OF_CLUSTERS)
         clustering.fit(lab_image_data)
 
         centroids = self.merge_similar_colors(
@@ -62,7 +62,7 @@ class KMeansExtractor(ColorExtractor):
         Prepare image and convert it to data for cluster analysis.
         """
         rgb_image = image.convert("RGB")
-        rgb_image = rgb_image.resize(IMAGE_THUMBNAIL_SIZE, resample=Image.LANCZOS)
+        rgb_image.thumbnail(IMAGE_THUMBNAIL_SIZE, resample=Image.LANCZOS)
         rgb_image_data = np.expand_dims(
             np.array(rgb_image.getdata(), dtype=np.uint8), axis=0
         )
