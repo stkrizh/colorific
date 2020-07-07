@@ -6,6 +6,10 @@ default:
     host: !ENV ${POSTGRES_HOST}
     port: !ENV ${POSTGRES_PORT}
 
+  redis:
+    host: !ENV ${REDIS_HOST}
+    port: !ENV ${REDIS_PORT:int}
+
   colorific:
     allowed_image_content_types:
       - image/jpeg

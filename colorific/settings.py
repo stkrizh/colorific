@@ -15,6 +15,7 @@ DEFAULT_CONFIG = BASE_DIR / "config.yaml"
 @dataclass(frozen=True)
 class Config:
     postgres: "PostgresConfig"
+    redis: "RedisConfig"
     colorific: "ColorificConfig"
     unsplash: "UnsplashConfig"
 
@@ -33,6 +34,12 @@ class PostgresConfig:
             f"postgresql://{self.user}:{self.password}"
             f"@{self.host}:{self.port}/{self.database}"
         )
+
+
+@dataclass(frozen=True)
+class RedisConfig:
+    host: str
+    port: int
 
 
 @dataclass(frozen=True)
@@ -100,6 +107,7 @@ def parse_config(
         postgres=PostgresConfig(**config["postgres"]),
         colorific=ColorificConfig(**config["colorific"]),
         unsplash=UnsplashConfig(**config["unsplash"]),
+        redis=RedisConfig(**config["redis"]),
     )
 
 

@@ -7,6 +7,7 @@ jobs:
       - image: postgres:12
         environment:
           POSTGRES_PASSWORD: test
+      - image: redis:6.0
     steps:
       - checkout
       - restore_cache:
@@ -30,6 +31,8 @@ jobs:
             POSTGRES_TEST_DB: postgres
             POSTGRES_TEST_HOST: localhost
             POSTGRES_TEST_PORT: 5432
+            REDIS_HOST: localhost
+            REDIS_PORT: 6379
             OMP_NUM_THREADS: 1
             IMAGE_INDEXING: false
             CORS_ALLOW_ORIGIN: '*'
