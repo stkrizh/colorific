@@ -2,6 +2,7 @@ import asyncio
 import pathlib
 
 import aiojobs.aiohttp
+import aioredis
 from aiohttp import ClientSession, TCPConnector, web
 
 from . import db, routes, workers
@@ -24,6 +25,7 @@ def init(setup_workers: bool = True) -> web.Application:
         application.cleanup_ctx.append(workers.setup)
 
     application.cleanup_ctx.append(db.setup)
+    application.cleanup_ctx.append(setup_redis)
     application.cleanup_ctx.append(setup_http_client)
 
     if config.colorific.image_indexing:
@@ -50,3 +52,12 @@ async def setup_image_indexing(app):
     )
     asyncio.create_task(indexer.run())
     yield
+
+
+async def setup_redis(app):
+    app["redis"] = await aioredis.create_redis_pool(
+        (config.redis.host, config.redis.port)
+    )
+    yield
+    app["redis"].close()
+    await app["redis"].wait_closed()
