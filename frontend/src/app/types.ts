@@ -3,6 +3,8 @@ interface ColorInterface {
   green: number;
   blue: number;
   percentage: number;
+  name: string | null;
+  name_distance: number | null;
 }
 
 
@@ -11,12 +13,16 @@ export class Color implements ColorInterface {
   green: number;
   blue: number;
   percentage: number;
+  name: string | null;
+  name_distance: number | null;
 
   constructor(data: ColorInterface) {
     this.red = data.red;
     this.green = data.green;
     this.blue = data.blue;
     this.percentage = data.percentage;
+    this.name = data.name;
+    this.name_distance = data.name_distance;
   }
 
   toHex(): string {
