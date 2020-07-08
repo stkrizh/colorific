@@ -9,6 +9,7 @@ from PIL import Image
 from skimage.color import rgb2lab
 from sklearn.cluster import KMeans
 
+from . import color_names
 from .image_loader import open_image
 from .types import Color
 
@@ -20,7 +21,7 @@ MAX_NUMBER_OF_CLUSTERS = 12
 
 class ColorExtractor(ABC):
     """
-    Base class that defines common interface for color exctraction.
+    Base class that defines common interface for color extraction.
     """
 
     @abstractmethod
@@ -55,7 +56,18 @@ class KMeansExtractor(ColorExtractor):
         centroids = self.merge_similar_colors(
             clustering.cluster_centers_, clustering.labels_
         )
-        return [Color(*centroid) for centroid in centroids]
+        names_with_dist = color_names.find(centroids[:, :-1])
+        return [
+            Color(
+                L=centroid[0],
+                a=centroid[1],
+                b=centroid[2],
+                percentage=centroid[3],
+                name=name,
+                name_distance=name_distance,
+            )
+            for centroid, (name, name_distance) in zip(centroids, names_with_dist)
+        ]
 
     def prepare_image_data(self, image: Image) -> np.ndarray:
         """

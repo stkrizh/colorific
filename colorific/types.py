@@ -19,6 +19,8 @@ class Color:
     a: float
     b: float
     percentage: float
+    name: Optional[str] = None
+    name_distance: Optional[float] = None
 
     @classmethod
     def from_rgb(cls, r: int, g: int, b: int, percentage: float = 1.0) -> "Color":

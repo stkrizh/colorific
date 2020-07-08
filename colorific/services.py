@@ -99,7 +99,13 @@ async def get_image_colors(connection: SAConnection, image_id: int) -> List[Colo
     )
     colors: List[Color] = []
     async for row in connection.execute(sql, {"image_id": image_id}):
-        color = Color(L=row["L"], a=row["a"], b=row["b"], percentage=row["percentage"])
+        color = Color(
+            L=row["L"],
+            a=row["a"],
+            b=row["b"],
+            percentage=row["percentage"],
+            name=row["name"],
+        )
         colors.append(color)
 
     return colors

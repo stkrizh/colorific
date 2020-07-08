@@ -256,6 +256,8 @@ class UnsplashIndexer(ImageIndexer):
                             a=color.a,
                             b=color.b,
                             percentage=color.percentage,
+                            name=color.name,
+                            name_distance=color.name_distance,
                         )
                     )
                 LOG.debug(f"Colors for {image.origin} have been added to DB.")
