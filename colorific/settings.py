@@ -18,6 +18,7 @@ class Config:
     redis: "RedisConfig"
     colorific: "ColorificConfig"
     unsplash: "UnsplashConfig"
+    rate_limit: "RateLimitConfig"
 
 
 @dataclass(frozen=True)
@@ -48,6 +49,12 @@ class UnsplashConfig:
     end_page: int
     images_per_page: int
     start_page: int
+
+
+@dataclass(frozen=True)
+class RateLimitConfig:
+    color_extraction_ip_time_interval: int
+    color_extraction_ip_limit: int
 
 
 @dataclass(frozen=True)
@@ -108,6 +115,7 @@ def parse_config(
         colorific=ColorificConfig(**config["colorific"]),
         unsplash=UnsplashConfig(**config["unsplash"]),
         redis=RedisConfig(**config["redis"]),
+        rate_limit=RateLimitConfig(**config["rate_limit"]),
     )
 
 

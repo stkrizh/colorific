@@ -8,7 +8,7 @@ from aiohttp.web import HTTPBadRequest, Response, View, json_response
 from marshmallow import ValidationError
 from tenacity import RetryError
 
-from . import image_loader
+from . import image_loader, rate_limit
 from .extractor import Color, KMeansExtractor
 from .schema import (
     ColorRequestSchema,
@@ -18,10 +18,14 @@ from .schema import (
     UploadURLRequestSchema,
 )
 from .services import get_image, get_image_colors, get_images_by_color
+from .settings import config
 from .types import Image
 
 
 LOG = logging.getLogger(__file__)
+RATE_LIMIT_COLOR_EXTRACTION_ERROR = (
+    "You've been trying to upload too many images, please try again a bit later."
+)
 
 
 class ViewMixin:
@@ -48,8 +52,19 @@ class ColorExtractionView(View, ViewMixin):
         return Response(status=200, headers={"Content-Type": "text/plain"})
 
     async def put(self) -> Response:
+        if await rate_limit.is_exceeded(
+            self.request,
+            "color_extraction",
+            time_interval=config.rate_limit.color_extraction_ip_time_interval,
+            limit=config.rate_limit.color_extraction_ip_limit,
+        ):
+            return json_response(
+                {"error": RATE_LIMIT_COLOR_EXTRACTION_ERROR}, status=429
+            )
+
         if self.request.content_type == "application/json":
             return await self.handle_json_request()
+
         return await self.handle_binary_request()
 
     async def handle_json_request(self) -> Response:

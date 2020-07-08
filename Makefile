@@ -96,3 +96,17 @@ test: .check-venv
 	@echo "--- Running tests"
 	pytest -x
 	$(SUCCESS)
+
+
+docker-up:
+	@echo "-----------------------"
+	@echo "--- Starting Docker development services"
+	docker-compose -f ./docker-compose-dev.yaml up -d
+	$(SUCCESS)
+
+
+docker-down:
+	@echo "-----------------------"
+	@echo "--- Stopping Docker development services"
+	docker-compose -f ./docker-compose-dev.yaml down
+	$(SUCCESS)

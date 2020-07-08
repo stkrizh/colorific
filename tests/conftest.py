@@ -56,6 +56,12 @@ def db(client):
 
 
 @pytest.fixture
+async def redis(client):
+    yield client.server.app["redis"]
+    await client.server.app["redis"].flushdb()
+
+
+@pytest.fixture
 async def clean_tables(client):
     """
     Clean DB tables after a test completes.
