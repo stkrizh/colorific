@@ -1,0 +1,12 @@
+.*
+*.pyc
+frontend
+tests
+docker-compose.yaml
+docker-compose-dev.yaml
+Dockerfile
+LICENSE
+Makefile
+nginx.conf
+README.md
+setup.cfg

@@ -2,14 +2,21 @@ import asyncio
 import json
 import logging
 import sys
-from typing import List, Optional
+from typing import TYPE_CHECKING, List, Optional
 
-from aiohttp.web import HTTPBadRequest, Response, View, json_response
+from aiohttp.web import (
+    HTTPBadRequest,
+    HTTPTooManyRequests,
+    Response,
+    View,
+    json_response,
+)
 from marshmallow import ValidationError
 from tenacity import RetryError
 
 from . import image_loader
 from .extractor import Color, KMeansExtractor
+from .rate_limit import RateLimit, RateLimitExceeded
 from .schema import (
     ColorRequestSchema,
     ColorSchema,
@@ -18,16 +25,28 @@ from .schema import (
     UploadURLRequestSchema,
 )
 from .services import get_image, get_image_colors, get_images_by_color
+from .settings import config
 from .types import Image
 
 
 LOG = logging.getLogger(__file__)
+SERVICE_UNAVAILABLE_ERROR = (
+    "We're sorry, the service is temporarily unavailable due to many requests. "
+    "Please try again a bit later."
+)
+
+if TYPE_CHECKING:
+    _base = View
+else:
+    _base = object
 
 
-class ViewMixin:
+class ViewMixin(_base):
     """
     Mixin with a set of helper methods.
     """
+
+    rate_limit: Optional[RateLimit] = None
 
     def bad_request(self, body: Optional[dict] = None, **kwargs) -> HTTPBadRequest:
         """
@@ -38,19 +57,52 @@ class ViewMixin:
             content_type="application/json",
         )
 
+    async def ensure_rate_limit(self) -> None:
+        """
+        Raise HTTP exception with 429 status code if the rate limit is exceeded.
+        """
+        if self.rate_limit is not None:
+            try:
+                await self.rate_limit.ensure(self.request)
+            except RateLimitExceeded as error:
+                error_msg, ttl = error.args
+                raise HTTPTooManyRequests(
+                    text=json.dumps({"error": error_msg}),
+                    content_type="application/json",
+                    headers={"Retry-After": str(ttl)},
+                )
 
-class ColorExtractionView(View, ViewMixin):
+
+class ColorExtractionView(ViewMixin, View):
     """
     Main API-endpoint for color extraction.
     """
+
+    rate_limit = RateLimit(
+        name="color_extraction",
+        time_interval=config.rate_limit.color_extraction_ip_time_interval,
+        limit=config.rate_limit.color_extraction_ip_limit,
+        error=(
+            "You've been trying to upload too many images, "
+            "please try again a bit later."
+        ),
+    )
 
     async def options(self) -> Response:
         return Response(status=200, headers={"Content-Type": "text/plain"})
 
     async def put(self) -> Response:
-        if self.request.content_type == "application/json":
-            return await self.handle_json_request()
-        return await self.handle_binary_request()
+        await self.ensure_rate_limit()
+
+        semaphore = self.request.app["color_extraction_semaphore"]
+        if semaphore.locked():
+            return json_response({"error": SERVICE_UNAVAILABLE_ERROR}, status=503)
+
+        async with semaphore:
+            if self.request.content_type == "application/json":
+                return await self.handle_json_request()
+
+            return await self.handle_binary_request()
 
     async def handle_json_request(self) -> Response:
         schema = UploadURLRequestSchema()
@@ -108,12 +160,24 @@ class ColorExtractionView(View, ViewMixin):
         return json_response(schema.dump(colors, many=True))
 
 
-class ImageListView(View, ViewMixin):
+class ImageListView(ViewMixin, View):
     """
     Search images by color.
     """
 
+    rate_limit = RateLimit(
+        name="image_search",
+        time_interval=config.rate_limit.image_search_ip_time_interval,
+        limit=config.rate_limit.image_search_ip_limit,
+        error=(
+            "You've making too many requests to the service, "
+            "please try again a bit later."
+        ),
+    )
+
     async def get(self) -> Response:
+        await self.ensure_rate_limit()
+
         input_schema = ColorRequestSchema()
         try:
             color: Color = input_schema.load(self.request.query)
@@ -127,7 +191,7 @@ class ImageListView(View, ViewMixin):
         return json_response(output_schema.dump(images, many=True))
 
 
-class ImageDetailView(View, ViewMixin):
+class ImageDetailView(ViewMixin, View):
     """
     Detail information about specific image.
     """

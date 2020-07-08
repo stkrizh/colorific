@@ -29,6 +29,13 @@ default:
     image_min_width: 50
     pool_exec_size: 2
 
+  rate_limit:
+    color_extraction_concurrency: 20
+    color_extraction_ip_time_interval: 300
+    color_extraction_ip_limit: 10
+    image_search_ip_time_interval: 60
+    image_search_ip_limit: 15
+
   unsplash:
     access_key: !ENV ${UNSPLASH_API_ACCESS_KEY}
     end_page: 300
@@ -53,3 +60,10 @@ test:
     image_max_height: 1000
     image_max_width: 1000
     pool_exec_size: 1
+
+  rate_limit:
+    color_extraction_concurrency: 3
+    color_extraction_ip_time_interval: 2
+    color_extraction_ip_limit: 3
+    image_search_ip_time_interval: 2
+    image_search_ip_limit: 3
