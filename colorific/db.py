@@ -1,5 +1,3 @@
-import asyncio
-
 import aiopg.sa
 import sqlalchemy as sa
 from aiohttp.web import Application
@@ -35,21 +33,15 @@ image_color = sa.Table(
     sa.Column("a", sa.Float(), nullable=False),
     sa.Column("b", sa.Float(), nullable=False),
     sa.Column("percentage", sa.Float(), nullable=False),
+    sa.Column("name", sa.String(), nullable=True),
+    sa.Column("name_distance", sa.Float(), nullable=True),
 )
 
 
 async def setup(app: Application):
-    await on_startup(app)
-    yield
-    await on_cleanup(app)
-
-
-async def on_startup(app: Application):
     engine = await aiopg.sa.create_engine(config.postgres.dsn, echo=True)
     app["db"] = engine
-
-
-async def on_cleanup(app: Application):
+    yield
     app["db"].close()
     await app["db"].wait_closed()
 
@@ -61,13 +53,3 @@ def create_engine():
     """
     engine = sa.create_engine(config.postgres.dsn)
     return engine
-
-
-def execute(coro, *args, **kwargs):
-    async def wrapper():
-        async with aiopg.sa.create_engine(config.postgres.dsn) as engine:
-            async with engine.acquire() as conn:
-                result = await coro(conn, *args, **kwargs)
-        return result
-
-    return asyncio.run(wrapper())

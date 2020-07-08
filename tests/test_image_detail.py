@@ -25,7 +25,13 @@ async def test_image_detail_valid_request(client, image_id, placeholder):
     response_json = await response.json()
     assert "image" in response_json
     assert "colors" in response_json
+
     assert sum(color["percentage"] for color in response_json["colors"]) == 1
+    assert all(isinstance(color["name"], str) for color in response_json["colors"])
+    assert all(
+        isinstance(color["name_distance"], float) for color in response_json["colors"]
+    )
+
     assert response_json["image"]["origin"] == placeholder
     assert response_json["image"]["url_big"] == placeholder
     assert response_json["image"]["url_thumb"] == placeholder

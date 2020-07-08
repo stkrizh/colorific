@@ -25,7 +25,8 @@ export class ColorPaletteComponent implements OnInit {
   }
 
   getColorInfo(color: Color): string {
-    return `#${color.toHex()} - ${(color.percentage * 100).toFixed(1)}%`;
+    let prefix = color.name === null ? '' : `${color.name} - `;
+    return `${prefix}#${color.toHex()} - ${(color.percentage * 100).toFixed(1)}%`;
   }
 
   selectColor(color: Color) {
