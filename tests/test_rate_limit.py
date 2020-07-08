@@ -79,3 +79,45 @@ async def test_color_extraction_several_ips(client, redis):
         statuses = Counter(resp.status for resp in responses)
         assert statuses[200] == limit * len(ips)
         assert statuses[429] == len(ips)
+
+
+async def test_image_search_several_ips(client, redis):
+    limit = config.rate_limit.image_search_ip_limit
+
+    ips = ["11.11.11.11", "22.22.22.22", "33.33.33.33"]
+
+    coros = [
+        client.get("/images?color=ff0000", headers={"X-Real-IP": ip})
+        for ip in islice(cycle(ips), (limit + 1) * len(ips))
+    ]
+    responses = await asyncio.gather(*coros)
+    statuses = Counter(resp.status for resp in responses)
+    assert statuses[200] == limit * len(ips)
+    assert statuses[429] == len(ips)
+
+
+async def test_several_endpoints_for_one_ip(client, redis):
+    limit_1 = config.rate_limit.image_search_ip_limit
+    limit_2 = config.rate_limit.color_extraction_ip_limit
+    ip = "77.77.77.77"
+
+    def side_effect(*args, **kwargs):
+        return json_response({"fake": "OK"})
+
+    with patch.object(
+        ColorExtractionView, "handle_json_request", new_callable=AsyncMock
+    ) as mock:
+        mock.side_effect = side_effect
+        coros = [
+            client.get("/images?color=ff0000", headers={"X-Real-IP": ip})
+            for _ in range(limit_1)
+        ]
+        coros += [
+            client.put("/image", json={"url": VALID_URL}, headers={"X-Real-IP": ip})
+            for _ in range(limit_2)
+        ]
+        responses = await asyncio.gather(*coros)
+        statuses = Counter(resp.status for resp in responses)
+        assert statuses[200] == limit_1 + limit_2
+
+    assert len(await redis.keys("*")) == 2

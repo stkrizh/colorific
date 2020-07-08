@@ -2,14 +2,21 @@ import asyncio
 import json
 import logging
 import sys
-from typing import List, Optional
+from typing import TYPE_CHECKING, List, Optional
 
-from aiohttp.web import HTTPBadRequest, Response, View, json_response
+from aiohttp.web import (
+    HTTPBadRequest,
+    HTTPTooManyRequests,
+    Response,
+    View,
+    json_response,
+)
 from marshmallow import ValidationError
 from tenacity import RetryError
 
-from . import image_loader, rate_limit
+from . import image_loader
 from .extractor import Color, KMeansExtractor
+from .rate_limit import RateLimit, RateLimitExceeded
 from .schema import (
     ColorRequestSchema,
     ColorSchema,
@@ -23,15 +30,20 @@ from .types import Image
 
 
 LOG = logging.getLogger(__file__)
-RATE_LIMIT_COLOR_EXTRACTION_ERROR = (
-    "You've been trying to upload too many images, please try again a bit later."
-)
 
 
-class ViewMixin:
+if TYPE_CHECKING:
+    _base = View
+else:
+    _base = object
+
+
+class ViewMixin(_base):
     """
     Mixin with a set of helper methods.
     """
+
+    rate_limit: Optional[RateLimit] = None
 
     def bad_request(self, body: Optional[dict] = None, **kwargs) -> HTTPBadRequest:
         """
@@ -42,25 +54,40 @@ class ViewMixin:
             content_type="application/json",
         )
 
+    async def ensure_rate_limit(self) -> None:
+        """
+        Raise HTTP exception with 429 status code if the rate limit is exceeded.
+        """
+        if self.rate_limit is not None:
+            try:
+                await self.rate_limit.ensure(self.request)
+            except RateLimitExceeded:
+                raise HTTPTooManyRequests(
+                    text=json.dumps({"error": self.rate_limit.error}),
+                    content_type="application/json",
+                )
 
-class ColorExtractionView(View, ViewMixin):
+
+class ColorExtractionView(ViewMixin, View):
     """
     Main API-endpoint for color extraction.
     """
+
+    rate_limit = RateLimit(
+        name="color_extraction",
+        time_interval=config.rate_limit.color_extraction_ip_time_interval,
+        limit=config.rate_limit.color_extraction_ip_limit,
+        error=(
+            "You've been trying to upload too many images, "
+            "please try again a bit later."
+        ),
+    )
 
     async def options(self) -> Response:
         return Response(status=200, headers={"Content-Type": "text/plain"})
 
     async def put(self) -> Response:
-        if await rate_limit.is_exceeded(
-            self.request,
-            "color_extraction",
-            time_interval=config.rate_limit.color_extraction_ip_time_interval,
-            limit=config.rate_limit.color_extraction_ip_limit,
-        ):
-            return json_response(
-                {"error": RATE_LIMIT_COLOR_EXTRACTION_ERROR}, status=429
-            )
+        await self.ensure_rate_limit()
 
         if self.request.content_type == "application/json":
             return await self.handle_json_request()
@@ -123,12 +150,24 @@ class ColorExtractionView(View, ViewMixin):
         return json_response(schema.dump(colors, many=True))
 
 
-class ImageListView(View, ViewMixin):
+class ImageListView(ViewMixin, View):
     """
     Search images by color.
     """
 
+    rate_limit = RateLimit(
+        name="image_search",
+        time_interval=config.rate_limit.image_search_ip_time_interval,
+        limit=config.rate_limit.image_search_ip_limit,
+        error=(
+            "You've making too many requests to the service, "
+            "please try again a bit later."
+        ),
+    )
+
     async def get(self) -> Response:
+        await self.ensure_rate_limit()
+
         input_schema = ColorRequestSchema()
         try:
             color: Color = input_schema.load(self.request.query)
@@ -142,7 +181,7 @@ class ImageListView(View, ViewMixin):
         return json_response(output_schema.dump(images, many=True))
 
 
-class ImageDetailView(View, ViewMixin):
+class ImageDetailView(ViewMixin, View):
     """
     Detail information about specific image.
     """
