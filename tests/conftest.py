@@ -142,23 +142,28 @@ def create_images(sync_db_engine):
     )
 
     colors = {
-        1: [(255, 0, 0, 0.5), (0, 0, 255, 0.5)],
-        2: [(0, 0, 0, 1)],
-        3: [(255, 255, 255, 1)],
-        4: [(0, 255, 0, 0.7), (0, 128, 0, 0.3)],
-        5: [(255, 0, 0, 0.6), (0, 0, 255, 0.2), (0, 128, 0, 0.2)],
+        1: [(255, 0, 0, 0.5, "'Red'", 0), (0, 0, 255, 0.5, "'Blue'", 0)],
+        2: [(0, 0, 0, 1, "'Black'", 0)],
+        3: [(255, 255, 255, 1, "'White'", 0)],
+        4: [(0, 255, 0, 0.7, "'Green'", 0), (0, 128, 0, 0.3, "'Grey'", 0)],
+        5: [
+            (255, 0, 0, 0.6, "'Red'", 0),
+            (0, 0, 255, 0.2, "'Blue'", 0),
+            (0, 128, 0, 0.2, "'Grey'", 0),
+        ],
     }
     sql: List[str] = []
     for image_id, image_colors in colors.items():
-        for rgb in image_colors:
-            color = Color.from_rgb(*rgb)
+        for raw_color in image_colors:
+            color = Color.from_rgb(*raw_color[:-2])
             sql.append(
-                f"({image_id}, {color.L}, {color.a}, {color.b}, {color.percentage})"
+                f"({image_id}, {color.L}, {color.a}, "
+                f"{color.b}, {color.percentage}, {raw_color[-2]}, {raw_color[-1]})"
             )
 
     sync_db_engine.execute(
         f"""
-        INSERT INTO image_color (image_id, "L", a, b, percentage) 
+        INSERT INTO image_color (image_id, "L", a, b, percentage, name, name_distance) 
         VALUES {', '.join(sql)};
         """
     )

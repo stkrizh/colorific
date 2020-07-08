@@ -243,8 +243,16 @@ async def test_valid_four_color_image(client, get_four_color_image):
         response = await client.put("/image", json={"url": VALID_URL})
         assert response.status == 200
         response_json = await response.json()
+
         assert isinstance(response_json, list)
         assert len(response_json) > 2
+
+        assert all(isinstance(color["red"], int) for color in response_json)
+        assert all(isinstance(color["green"], int) for color in response_json)
+        assert all(isinstance(color["blue"], int) for color in response_json)
+        assert all(isinstance(color["percentage"], float) for color in response_json)
+        assert all(isinstance(color["name"], str) for color in response_json)
+        assert all(isinstance(color["name_distance"], float) for color in response_json)
 
 
 @pytest.mark.parametrize(
@@ -271,5 +279,13 @@ async def test_valid_one_color_image(
         response = await client.put("/image", json={"url": VALID_URL})
         assert response.status == 200
         response_json = await response.json()
+
         assert isinstance(response_json, list)
         assert len(response_json) == 1
+
+        assert all(isinstance(color["red"], int) for color in response_json)
+        assert all(isinstance(color["green"], int) for color in response_json)
+        assert all(isinstance(color["blue"], int) for color in response_json)
+        assert all(isinstance(color["percentage"], float) for color in response_json)
+        assert all(isinstance(color["name"], str) for color in response_json)
+        assert all(isinstance(color["name_distance"], float) for color in response_json)

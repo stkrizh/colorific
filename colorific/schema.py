@@ -34,7 +34,7 @@ class ColorSchema(Schema):
     blue = fields.Integer()
     percentage = fields.Float()
     name = fields.String(allow_none=True)
-    name_distance = fields.String(allow_none=True)
+    name_distance = fields.Float(allow_none=True)
 
 
 class ImageResponseSchema(Schema):

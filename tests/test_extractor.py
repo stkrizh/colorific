@@ -7,23 +7,24 @@ from colorific.settings import config
 
 
 @pytest.mark.parametrize(
-    "mode, color, expected_rgb",
+    "mode, color, expected_rgb, expected_name",
     [
-        ("RGB", (255, 0, 0), (255, 0, 0)),
-        ("RGB", (0, 255, 0), (0, 255, 0)),
-        ("RGB", (0, 0, 255), (0, 0, 255)),
-        ("L", 255, (255, 255, 255)),
-        ("L", 0, (0, 0, 0)),
-        ("RGBA", (255, 0, 0, 128), (255, 0, 0)),
-        ("RGBA", (255, 0, 0, 0), (255, 0, 0)),
-        ("P", (128, 255, 0), (128, 255, 0)),
+        ("RGB", (255, 0, 0), (255, 0, 0), "Red"),
+        ("RGB", (0, 255, 0), (0, 255, 0), "Green"),
+        ("RGB", (0, 0, 255), (0, 0, 255), "Blue"),
+        ("L", 255, (255, 255, 255), "White"),
+        ("L", 0, (0, 0, 0), "Black"),
+        ("RGBA", (255, 0, 0, 128), (255, 0, 0), "Red"),
+        ("RGBA", (255, 0, 0, 0), (255, 0, 0), "Red"),
+        ("P", (128, 255, 0), (128, 255, 0), "Radium"),
     ],
 )
-def test_one_color_image(mode, color, expected_rgb, get_one_color_image):
+def test_one_color_image(mode, color, expected_rgb, expected_name, get_one_color_image):
     extractor = KMeansExtractor()
     image = get_one_color_image(mode, color)
     colors = extractor.extract(image)
     assert len(colors) == 1
+    assert colors[0].name == expected_name
     assert np.linalg.norm(np.array(colors[0].rgb) - np.array(expected_rgb)) < 10
 
 

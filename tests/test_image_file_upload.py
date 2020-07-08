@@ -94,8 +94,16 @@ async def test_valid_image_dimensions(client, get_image_data, width, height):
     )
     assert response.status == 200
     response_json = await response.json()
+
     assert isinstance(response_json, list)
     assert len(response_json) == 1
+
+    assert all(isinstance(color["red"], int) for color in response_json)
+    assert all(isinstance(color["green"], int) for color in response_json)
+    assert all(isinstance(color["blue"], int) for color in response_json)
+    assert all(isinstance(color["percentage"], float) for color in response_json)
+    assert all(isinstance(color["name"], str) for color in response_json)
+    assert all(isinstance(color["name_distance"], float) for color in response_json)
 
 
 async def test_too_big_image_size(client):

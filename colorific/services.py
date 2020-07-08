@@ -105,6 +105,7 @@ async def get_image_colors(connection: SAConnection, image_id: int) -> List[Colo
             b=row["b"],
             percentage=row["percentage"],
             name=row["name"],
+            name_distance=row["name_distance"],
         )
         colors.append(color)
 
