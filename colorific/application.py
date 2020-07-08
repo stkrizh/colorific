@@ -31,6 +31,10 @@ def init(setup_workers: bool = True) -> web.Application:
     if config.colorific.image_indexing:
         application.cleanup_ctx.append(setup_image_indexing)
 
+    application["color_extraction_semaphore"] = asyncio.Semaphore(
+        config.rate_limit.color_extraction_concurrency
+    )
+
     return application
 
 

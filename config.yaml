@@ -30,6 +30,7 @@ default:
     pool_exec_size: 2
 
   rate_limit:
+    color_extraction_concurrency: 20
     color_extraction_ip_time_interval: 300
     color_extraction_ip_limit: 10
     image_search_ip_time_interval: 60
@@ -61,6 +62,7 @@ test:
     pool_exec_size: 1
 
   rate_limit:
+    color_extraction_concurrency: 3
     color_extraction_ip_time_interval: 2
     color_extraction_ip_limit: 3
     image_search_ip_time_interval: 2

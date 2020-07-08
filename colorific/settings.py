@@ -53,6 +53,7 @@ class UnsplashConfig:
 
 @dataclass(frozen=True)
 class RateLimitConfig:
+    color_extraction_concurrency: int
     color_extraction_ip_time_interval: int
     color_extraction_ip_limit: int
     image_search_ip_time_interval: int

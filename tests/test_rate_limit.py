@@ -1,6 +1,6 @@
 import asyncio
 from collections import Counter
-from itertools import cycle, islice
+from itertools import count, cycle, islice
 from unittest.mock import AsyncMock, patch
 
 from aiohttp.web import json_response
@@ -121,3 +121,58 @@ async def test_several_endpoints_for_one_ip(client, redis):
         assert statuses[200] == limit_1 + limit_2
 
     assert len(await redis.keys("*")) == 2
+
+
+async def test_color_extraction_concurrency(client, redis):
+    concurrency = config.rate_limit.color_extraction_concurrency
+    ips = map(str, count(start=1))
+
+    async def side_effect(*args, **kwargs):
+        await asyncio.sleep(0.5)
+        return json_response({"fake": "OK"})
+
+    with patch.object(
+        ColorExtractionView, "handle_json_request", new_callable=AsyncMock
+    ) as mock:
+        mock.side_effect = side_effect
+        coros = [
+            client.put("/image", json={"url": VALID_URL}, headers={"X-Real-IP": ip})
+            for ip in islice(ips, concurrency + 2)
+        ]
+
+        responses = await asyncio.gather(*coros)
+        statuses = Counter(resp.status for resp in responses)
+        assert statuses[200] == concurrency
+        assert statuses[503] == 2
+
+    assert len(await redis.keys("*")) == concurrency + 2
+
+
+async def test_retry_after_header(client, redis):
+    limit_1 = config.rate_limit.color_extraction_ip_limit
+    limit_2 = config.rate_limit.image_search_ip_limit
+    ip = "77.77.77.77"
+
+    def side_effect(*args, **kwargs):
+        return json_response({"fake": "OK"})
+
+    with patch.object(
+        ColorExtractionView, "handle_json_request", new_callable=AsyncMock
+    ) as mock:
+        mock.side_effect = side_effect
+
+        coros = [
+            client.put("/image", json={"url": VALID_URL}, headers={"X-Real-IP": ip})
+            for _ in range(limit_1 + 2)
+        ]
+        coros += [
+            client.get("/images?color=ffeeee", headers={"X-Real-IP": ip})
+            for _ in range(limit_2 + 1)
+        ]
+        responses = await asyncio.gather(*coros)
+        failed_responses = [resp for resp in responses if resp.status == 429]
+
+        assert len(failed_responses) == 3
+        assert all(
+            resp.headers.get("Retry-After", "").isdigit() for resp in failed_responses
+        )

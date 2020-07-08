@@ -30,7 +30,10 @@ from .types import Image
 
 
 LOG = logging.getLogger(__file__)
-
+SERVICE_UNAVAILABLE_ERROR = (
+    "We're sorry, the service is temporarily unavailable due to many requests. "
+    "Please try again a bit later."
+)
 
 if TYPE_CHECKING:
     _base = View
@@ -61,10 +64,12 @@ class ViewMixin(_base):
         if self.rate_limit is not None:
             try:
                 await self.rate_limit.ensure(self.request)
-            except RateLimitExceeded:
+            except RateLimitExceeded as error:
+                error_msg, ttl = error.args
                 raise HTTPTooManyRequests(
-                    text=json.dumps({"error": self.rate_limit.error}),
+                    text=json.dumps({"error": error_msg}),
                     content_type="application/json",
+                    headers={"Retry-After": str(ttl)},
                 )
 
 
@@ -89,10 +94,15 @@ class ColorExtractionView(ViewMixin, View):
     async def put(self) -> Response:
         await self.ensure_rate_limit()
 
-        if self.request.content_type == "application/json":
-            return await self.handle_json_request()
+        semaphore = self.request.app["color_extraction_semaphore"]
+        if semaphore.locked():
+            return json_response({"error": SERVICE_UNAVAILABLE_ERROR}, status=503)
 
-        return await self.handle_binary_request()
+        async with semaphore:
+            if self.request.content_type == "application/json":
+                return await self.handle_json_request()
+
+            return await self.handle_binary_request()
 
     async def handle_json_request(self) -> Response:
         schema = UploadURLRequestSchema()

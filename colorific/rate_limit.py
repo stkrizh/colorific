@@ -39,4 +39,5 @@ class RateLimit:
             await redis.expire(key, self.time_interval)
 
         if value > self.limit:
-            raise RateLimitExceeded(self.error)
+            ttl = int(await redis.ttl(key))
+            raise RateLimitExceeded(self.error, ttl)
