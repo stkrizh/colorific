@@ -44,7 +44,7 @@ jobs:
       - checkout
       - run:
           name: Running temp job
-          command: echo OK
+          command: ls ~/.ssh
 
   build-and-deploy-frontend:
     docker:
