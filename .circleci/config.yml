@@ -49,26 +49,27 @@ jobs:
   build-frontend:
     docker:
       - image: node:14.5
-    working_directory: ./frontend
     steps:
       - checkout
       - restore_cache:
-          key: colorific-frontend-{{ checksum "package-lock.json" }}
+          key: colorific-frontend-{{ checksum "frontend/package-lock.json" }}
       - run:
           name: Install dependencies with NPM
+          working_directory: ./frontend
           command: npm install
       - save_cache:
-          key: colorific-frontend-{{ checksum "package-lock.json" }}
+          key: colorific-frontend-{{ checksum "frontend/package-lock.json" }}
           paths:
-            - node_modules
+            - frontend/node_modules
       - run:
           name: Build Angular application
+          working_directory: ./frontend
           command: ng build -c production
       - run:
           name: Deploy Angular files
           command: |
             ssh ubuntu@ec2-35-173-202-9.compute-1.amazonaws.com rm -rf ~/colorific/frontend/dist
-            scp -r ./dist ubuntu@ec2-35-173-202-9.compute-1.amazonaws.com:~/colorific/frontend/dist
+            scp -r frontend/dist ubuntu@ec2-35-173-202-9.compute-1.amazonaws.com:~/colorific/frontend/dist
 
 workflows:
   main:
