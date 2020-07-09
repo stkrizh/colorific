@@ -46,7 +46,7 @@ jobs:
           name: Running temp job
           command: echo OK
 
-  build-frontend:
+  build-and-deploy-frontend:
     docker:
       - image: node:14.5
     steps:
@@ -66,19 +66,36 @@ jobs:
           working_directory: ./frontend
           command: ./node_modules/@angular/cli/bin/ng build -c production
       - run:
-          name: Deploy Angular app
+          name: Deploy Angular application
           command: |
             ssh -o "StrictHostKeyChecking no" ubuntu@ec2-35-173-202-9.compute-1.amazonaws.com "rm -rf ~/colorific/frontend/dist"
             scp -r frontend/dist ubuntu@ec2-35-173-202-9.compute-1.amazonaws.com:~/colorific/frontend/dist
+
+  deploy-backend:
+    docker:
+      - image: ubuntu:20.04
+    steps:
+      - run:
+          name: Deploy Angular application
+          command: >
+            ssh -o "StrictHostKeyChecking no"
+            ubuntu@ec2-35-173-202-9.compute-1.amazonaws.com
+            "cd colorific && git checkout master && git pull &&
+            docker-compose down && docker-compose run --build -d nginx"
 
 workflows:
   main:
     jobs:
       - test-backend-temp
-      - build-frontend:
+      - build-and-deploy-frontend:
           requires:
             - test-backend-temp
           filters:
             branches:
               only: F22-frontend-wrap-up
-
+      - deploy-backend:
+          requires:
+            - build-and-deploy-frontend
+          filters:
+            branches:
+              only: F22-frontend-wrap-up
