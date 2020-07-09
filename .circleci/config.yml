@@ -64,7 +64,7 @@ jobs:
       - run:
           name: Build Angular application
           working_directory: ./frontend
-          command: ng build -c production
+          command: ./node_modules/@angular/cli/bin/ng build -c production
       - run:
           name: Deploy Angular files
           command: |
