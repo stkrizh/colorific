@@ -68,7 +68,7 @@ jobs:
       - run:
           name: Deploy Angular app
           command: |
-            ssh -o "StrictHostKeyChecking no" ubuntu@ec2-35-173-202-9.compute-1.amazonaws.com rm -rf ~/colorific/frontend/dist
+            ssh -o "StrictHostKeyChecking no" ubuntu@ec2-35-173-202-9.compute-1.amazonaws.com "rm -rf ~/colorific/frontend/dist"
             scp -r frontend/dist ubuntu@ec2-35-173-202-9.compute-1.amazonaws.com:~/colorific/frontend/dist
 
 workflows:
