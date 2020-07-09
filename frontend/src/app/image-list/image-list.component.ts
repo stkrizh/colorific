@@ -2,6 +2,7 @@ import { Component, Input, OnChanges, OnInit, SimpleChange } from "@angular/core
 import { HttpClient } from "@angular/common/http";
 import { ActivatedRoute } from "@angular/router";
 import { StateService } from "../state.service";
+import { environment } from 'src/environments/environment'; 
 
 
 interface Image {
@@ -44,7 +45,7 @@ export class ImageListComponent implements OnInit, OnChanges {
 
   fetchImages() {
     this.state.showLoaderOverlay();
-    const url = `http://localhost:8080/images?color=${this.color}`;
+    const url = `${environment.api}/images?color=${this.color}`;
     this.http.get(url).subscribe(
       (response) => {
         this.state.turnOffLoaderOverlay();

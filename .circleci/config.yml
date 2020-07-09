@@ -1,7 +1,7 @@
 version: 2.1
 
 jobs:
-  build-and-test:
+  test-backend:
     docker:
       - image: python:3.8
       - image: postgres:12
@@ -37,7 +37,46 @@ jobs:
             IMAGE_INDEXING: false
             CORS_ALLOW_ORIGIN: '*'
 
+  test-backend-temp:
+    docker:
+      - image: python:3.8
+    steps:
+      - checkout
+      - run:
+          name: Running temp job
+          command: echo OK
+
+  build-frontend:
+    docker:
+      - image: node:14.5
+    working_directory: ./frontend
+    steps:
+      - checkout
+      - restore_cache:
+        key: colorific-frontend-{{ checksum "package-lock.json" }}
+      - run:
+          name: Install dependencies with NPM
+          command: npm install
+      - save_cache:
+          key: colorific-frontend-{{ checksum "package-lock.json" }}
+          paths:
+            - node_modules
+      - run:
+          name: Build Angular application
+          command: ng build -c production
+      - run:
+          name: Deploy Angular files
+          command: |
+            ssh ubuntu@ec2-35-173-202-9.compute-1.amazonaws.com rm -rf ~/colorific/frontend/dist
+            scp -r ./dist ubuntu@ec2-35-173-202-9.compute-1.amazonaws.com:~/colorific/frontend/dist
+
 workflows:
   main:
     jobs:
-      - build-and-test
+      - test-backend-temp
+      - build-frontend:
+          requires: test-backend-temp
+          filters:
+            branches:
+              only: F22-frontend-wrap-up
+
