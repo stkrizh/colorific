@@ -76,29 +76,26 @@ jobs:
       - image: buildpack-deps:stretch
     steps:
       - run:
-          name: Prepare SSH
-          command: |
-            echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
-      - run:
           name: Deploy backend
           command: >
-            ssh ubuntu@ec2-35-173-202-9.compute-1.amazonaws.com
-            "cd colorific && git checkout master && git pull &&
+            ssh -o "StrictHostKeyChecking no"
+            ubuntu@ec2-35-173-202-9.compute-1.amazonaws.com
+            "cd colorific && git reset --hard && git checkout master && git pull &&
             docker-compose down && docker-compose run --build -d nginx"
 
 workflows:
   main:
     jobs:
       - test-backend-temp
-      - build-and-deploy-frontend:
-          requires:
-            - test-backend-temp
-          filters:
-            branches:
-              only: F22-frontend-wrap-up
+#      - build-and-deploy-frontend:
+#          requires:
+#            - test-backend-temp
+#          filters:
+#            branches:
+#              only: F22-frontend-wrap-up
       - deploy-backend:
           requires:
-            - build-and-deploy-frontend
+            - test-backend-temp
           filters:
             branches:
               only: F22-frontend-wrap-up
