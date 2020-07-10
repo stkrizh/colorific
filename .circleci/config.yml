@@ -81,7 +81,7 @@ jobs:
             ssh -o "StrictHostKeyChecking no"
             ubuntu@ec2-35-173-202-9.compute-1.amazonaws.com
             "cd colorific && git reset --hard && git checkout master && git pull &&
-            docker-compose down && docker-compose run --build -d nginx"
+            docker-compose down && docker-compose up --build -d nginx"
 
 workflows:
   main:
