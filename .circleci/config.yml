@@ -44,7 +44,7 @@ jobs:
       - checkout
       - run:
           name: Running temp job
-          command: ls ~/.ssh
+          command: echo OK
 
   build-and-deploy-frontend:
     docker:
@@ -73,13 +73,16 @@ jobs:
 
   deploy-backend:
     docker:
-      - image: ubuntu:20.04
+      - image: buildpack-deps:stretch
     steps:
       - run:
-          name: Deploy Angular application
+          name: Prepare SSH
+          command: |
+            echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+      - run:
+          name: Deploy backend
           command: >
-            ssh -o "StrictHostKeyChecking no"
-            ubuntu@ec2-35-173-202-9.compute-1.amazonaws.com
+            ssh ubuntu@ec2-35-173-202-9.compute-1.amazonaws.com
             "cd colorific && git checkout master && git pull &&
             docker-compose down && docker-compose run --build -d nginx"
 
