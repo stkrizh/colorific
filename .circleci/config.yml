@@ -46,7 +46,7 @@ jobs:
           name: Running temp job
           command: echo OK
 
-  build-and-deploy-frontend:
+  deploy-frontend:
     docker:
       - image: node:14.5
     steps:
@@ -68,8 +68,8 @@ jobs:
       - run:
           name: Deploy Angular application
           command: |
-            ssh -o "StrictHostKeyChecking no" ubuntu@ec2-35-173-202-9.compute-1.amazonaws.com "rm -rf ~/colorific/frontend/dist"
-            scp -r frontend/dist ubuntu@ec2-35-173-202-9.compute-1.amazonaws.com:~/colorific/frontend/dist
+            ssh -o "StrictHostKeyChecking no" $REMOTE_HOST "rm -rf ~/colorific/frontend/dist"
+            scp -r frontend/dist $REMOTE_HOST:~/colorific/frontend/dist
 
   deploy-backend:
     docker:
@@ -79,14 +79,15 @@ jobs:
           name: Deploy backend
           command: >
             ssh -o "StrictHostKeyChecking no"
-            ubuntu@ec2-35-173-202-9.compute-1.amazonaws.com
-            "cd colorific &&
-            git reset --hard &&
-            git checkout F22-frontend-wrap-up &&
-            git pull &&
-            docker-compose down &&
-            docker-compose run --rm backend alembic upgrade head &&
-            docker-compose up --build -d nginx"
+            $REMOTE_HOST
+            "cd /var/www/colorific_stkrizh_dev/ &&
+            touch im_here.txt"
+#            git reset --hard &&
+#            git checkout F22-frontend-wrap-up &&
+#            git pull &&
+#            docker-compose down &&
+#            docker-compose run --rm backend alembic upgrade head &&
+#            docker-compose up --build -d nginx"
 
 workflows:
   main:
