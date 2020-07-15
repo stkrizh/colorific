@@ -89,7 +89,7 @@ jobs:
             ssh -o "StrictHostKeyChecking no"
             $REMOTE_HOST
             "cd /var/www/colorific_stkrizh_dev/ &&
-            touch im_here.txt"
+            touch it_works.txt"
 #            git reset --hard &&
 #            git checkout F22-frontend-wrap-up &&
 #            git pull &&
