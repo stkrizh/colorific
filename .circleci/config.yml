@@ -50,6 +50,9 @@ jobs:
     docker:
       - image: node:14.5
     steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "12:a0:00:89:67:f4:2d:b3:4c:b0:ca:5f:25:1d:bb:26"
       - checkout
       - restore_cache:
           key: colorific-frontend-{{ checksum "frontend/package-lock.json" }}
@@ -75,6 +78,9 @@ jobs:
     docker:
       - image: buildpack-deps:stretch
     steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "12:a0:00:89:67:f4:2d:b3:4c:b0:ca:5f:25:1d:bb:26"
       - run:
           name: Deploy backend
           command: >
