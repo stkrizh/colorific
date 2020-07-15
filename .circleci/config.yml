@@ -85,6 +85,7 @@ jobs:
       - run:
           name: Deploy backend
           command: >
+            timeout 60s
             ssh -o "StrictHostKeyChecking no"
             $REMOTE_HOST
             "cd /var/www/colorific_stkrizh_dev/ &&
