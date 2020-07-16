@@ -106,12 +106,12 @@ workflows:
   main:
     jobs:
       - test-backend-temp
-#      - deploy-frontend:
-#          requires:
-#            - test-backend-temp
-#          filters:
-#            branches:
-#              only: F22-frontend-wrap-up
+      - deploy-frontend:
+          requires:
+            - test-backend-temp
+          filters:
+            branches:
+              only: F22-frontend-wrap-up
       - deploy-backend:
           requires:
             - test-backend-temp
