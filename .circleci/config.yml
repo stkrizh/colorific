@@ -71,11 +71,11 @@ jobs:
       - run:
           name: Deploy Angular application
           command: >
-            timeout 10s
+            timeout 60s
             ssh -o "StrictHostKeyChecking no" $REMOTE_HOST
             "rm -rf /var/www/colorific_stkrizh_dev/frontend/dist"
 
-            timeout 30s
+            timeout 60s
             scp -r frontend/dist
             $REMOTE_HOST:/var/www/colorific_stkrizh_dev/frontend/dist
 
