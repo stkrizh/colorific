@@ -70,9 +70,14 @@ jobs:
           command: ./node_modules/@angular/cli/bin/ng build -c production
       - run:
           name: Deploy Angular application
-          command: |
-            ssh -o "StrictHostKeyChecking no" $REMOTE_HOST "rm -rf ~/colorific/frontend/dist"
-            scp -r frontend/dist $REMOTE_HOST:~/colorific/frontend/dist
+          command: >
+            timeout 10s
+            ssh -o "StrictHostKeyChecking no" $REMOTE_HOST
+              "rm -rf /var/www/colorific_stkrizh_dev/frontend/dist"
+
+            timeout 30s
+            scp -r frontend/dist
+              $REMOTE_HOST:/var/www/colorific_stkrizh_dev/frontend/dist
 
   deploy-backend:
     docker:
@@ -86,30 +91,28 @@ jobs:
           name: Deploy backend
           command: >
             timeout 60s
-            ssh -o "StrictHostKeyChecking no"
-            $REMOTE_HOST
-            "cd /var/www/colorific_stkrizh_dev/ &&
-            touch im_here.txt"
-#            git reset --hard &&
-#            git checkout F22-frontend-wrap-up &&
-#            git pull &&
-#            docker-compose down &&
-#            docker-compose run --rm backend alembic upgrade head &&
-#            docker-compose up --build -d nginx"
+            ssh -o "StrictHostKeyChecking no" $REMOTE_HOST
+              "cd /var/www/colorific_stkrizh_dev/ &&
+              git reset --hard &&
+              git checkout F22-frontend-wrap-up &&
+              git pull &&
+              docker-compose down &&
+              docker-compose run --rm backend alembic upgrade head &&
+              docker-compose up --build -d nginx"
 
 workflows:
   main:
     jobs:
       - test-backend-temp
-#      - build-and-deploy-frontend:
-#          requires:
-#            - test-backend-temp
-#          filters:
-#            branches:
-#              only: F22-frontend-wrap-up
-      - deploy-backend:
+      - deploy-frontend:
           requires:
             - test-backend-temp
+          filters:
+            branches:
+              only: F22-frontend-wrap-up
+      - deploy-backend:
+          requires:
+            - deploy-frontend
           filters:
             branches:
               only: F22-frontend-wrap-up
