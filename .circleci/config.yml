@@ -69,12 +69,14 @@ jobs:
           working_directory: ./frontend
           command: ./node_modules/@angular/cli/bin/ng build -c production
       - run:
-          name: Deploy Angular application
+          name: Remove old dist files
           command: >
             timeout 60s
             ssh -o "StrictHostKeyChecking no" $REMOTE_HOST
             "rm -rf /var/www/colorific_stkrizh_dev/frontend/dist"
-
+      - run:
+          name: Deploy Angular application
+          command: >
             timeout 60s
             scp -r frontend/dist
             $REMOTE_HOST:/var/www/colorific_stkrizh_dev/frontend/dist
