@@ -92,7 +92,7 @@ jobs:
       - run:
           name: Deploy backend
           command: >
-            timeout 60s
+            timeout 180s
             ssh -o "StrictHostKeyChecking no" $REMOTE_HOST
             "cd /var/www/colorific_stkrizh_dev/ &&
             git reset --hard &&
@@ -106,15 +106,15 @@ workflows:
   main:
     jobs:
       - test-backend-temp
-      - deploy-frontend:
-          requires:
-            - test-backend-temp
-          filters:
-            branches:
-              only: F22-frontend-wrap-up
+#      - deploy-frontend:
+#          requires:
+#            - test-backend-temp
+#          filters:
+#            branches:
+#              only: F22-frontend-wrap-up
       - deploy-backend:
           requires:
-            - deploy-frontend
+            - test-backend-temp
           filters:
             branches:
               only: F22-frontend-wrap-up
