@@ -78,8 +78,9 @@ jobs:
           name: Deploy Angular application
           command: >
             timeout 60s
-            scp -r frontend/dist
-            $REMOTE_HOST:/var/www/colorific_stkrizh_dev/frontend/dist
+            rsync -r --delete -g --groupmap="*:stkrizh_users" ./frontend/dist
+            $REMOTE_HOST:/var/www/colorific_stkrizh_dev/frontend/
+
 
   deploy-backend:
     docker:
