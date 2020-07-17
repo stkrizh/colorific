@@ -66,10 +66,14 @@ jobs:
             chmod 700 ~/.ssh
             echo $REMOTE_HOST_PUBLIC_KEY > ~/.ssh/known_hosts
       - run:
-          name: Deploy Angular application
+          name: Remove old distribution
           command: >
             timeout 60s
-            ssh $REMOTE_HOST "rm -rf /var/www/colorific_stkrizh_dev/frontend/dist" &&
+            ssh $REMOTE_HOST "rm -rf /var/www/colorific_stkrizh_dev/frontend/dist"
+      - run:
+          name: Deploy Angular application
+          command: >
+            timeout 120s
             scp -r ./frontend/dist
             $REMOTE_HOST:/var/www/colorific_stkrizh_dev/frontend/
 
