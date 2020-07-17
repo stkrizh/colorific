@@ -11,7 +11,7 @@ async def get_images_by_color(
     color: Color,
     image_count: int = 36,
     offset: int = 0,
-    percentage_weight: float = 0.2,
+    percentage_weight: float = 0.5,
 ) -> List[Image]:
     """
     Return images from DB ordered by color similarity.

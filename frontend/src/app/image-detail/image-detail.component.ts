@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { StateService } from "../state.service";
 import { ImageDetailResponse, ImageDetailResponseInterface, Color } from "../types";
+import { environment } from 'src/environments/environment'; 
 
 
 @Component({
@@ -43,7 +44,7 @@ export class ImageDetailComponent implements OnInit {
 
   fetchImageDetail() {
     this.state.showLoaderOverlay();
-    const url = `http://localhost:8080/images/${this.imageID}`;
+    const url = `${environment.api}/images/${this.imageID}`;
     this.http.get(url).subscribe(
       (response) => {
         this.state.turnOffLoaderOverlay();

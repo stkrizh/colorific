@@ -4,7 +4,6 @@ import { NgModule } from "@angular/core";
 import { HttpClientModule } from "@angular/common/http";
 
 import { NgxFilesizeModule } from "ngx-filesize";
-import { NgxGistModule } from 'ngx-gist/dist/ngx-gist.module';
 
 import { AppRoutingModule, routingComponents } from "./app-routing.module";
 import { AppComponent } from "./app.component";
@@ -33,7 +32,6 @@ import { LoaderOverlayComponent } from './loader-overlay/loader-overlay.componen
     ReactiveFormsModule,
     HttpClientModule,
     NgxFilesizeModule,
-    NgxGistModule
   ],
   providers: [StateService],
   bootstrap: [AppComponent]

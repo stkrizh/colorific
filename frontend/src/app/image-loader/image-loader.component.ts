@@ -5,6 +5,7 @@ import { HttpClient } from "@angular/common/http";
 import { Subscription } from 'rxjs';
 import { Color, ColorsResponse } from "../types";
 import { FileSizePipe } from 'ngx-filesize';
+import { environment } from 'src/environments/environment'; 
 
 
 const MAX_IMAGE_FILE_SIZE_MB = 5;
@@ -145,7 +146,7 @@ export class ImageLoaderComponent implements OnInit, OnDestroy {
     else
       body = {url: this.imageURL.value};
 
-    this.http.put("http://0.0.0.0:8080/image", body).subscribe(
+    this.http.put(`${environment.api}/image`, body, {"headers": {"X-Real-IP": "77.77.77.78"}}).subscribe(
       response => {
         this.isImageLoading = false;
         this.colorsResponse = new ColorsResponse(<Color[]>response);
@@ -157,6 +158,10 @@ export class ImageLoaderComponent implements OnInit, OnDestroy {
           for (let key in error.error) {
             this.imageLoadErrorMessage = error.error[key][0];
           };
+        } else if (error.status == 429) {
+          this.imageLoadErrorMessage = error.error["error"];
+        } else if (error.status == 503) {
+          this.imageLoadErrorMessage = error.error["error"];
         } else {
           this.imageLoadErrorMessage = errorMessage;
           console.log(error);

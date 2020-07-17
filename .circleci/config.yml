@@ -1,7 +1,7 @@
 version: 2.1
 
 jobs:
-  build-and-test:
+  test-backend:
     docker:
       - image: python:3.8
       - image: postgres:12
@@ -37,7 +37,82 @@ jobs:
             IMAGE_INDEXING: false
             CORS_ALLOW_ORIGIN: '*'
 
+  deploy-frontend:
+    docker:
+      - image: node:14.5
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "12:a0:00:89:67:f4:2d:b3:4c:b0:ca:5f:25:1d:bb:26"
+      - checkout
+      - restore_cache:
+          key: colorific-frontend-{{ checksum "frontend/package-lock.json" }}
+      - run:
+          name: Install dependencies with NPM
+          working_directory: ./frontend
+          command: npm install
+      - save_cache:
+          key: colorific-frontend-{{ checksum "frontend/package-lock.json" }}
+          paths:
+            - frontend/node_modules
+      - run:
+          name: Build Angular application
+          working_directory: ./frontend
+          command: ./node_modules/@angular/cli/bin/ng build -c production
+      - run:
+          name: Prepare SSH keys
+          command: |
+            mkdir -p ~/.ssh
+            chmod 700 ~/.ssh
+            echo $REMOTE_HOST_PUBLIC_KEY > ~/.ssh/known_hosts
+      - run:
+          name: Deploy Angular application
+          command: >
+            timeout 60s
+            ssh $REMOTE_HOST "rm -rf /var/www/colorific_stkrizh_dev/frontend/dist" &&
+            scp -r ./frontend/dist
+            $REMOTE_HOST:/var/www/colorific_stkrizh_dev/frontend/
+
+  deploy-backend:
+    docker:
+      - image: buildpack-deps:stretch
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "12:a0:00:89:67:f4:2d:b3:4c:b0:ca:5f:25:1d:bb:26"
+      - checkout
+      - run:
+          name: Prepare SSH keys
+          command: |
+            mkdir -p ~/.ssh
+            chmod 700 ~/.ssh
+            echo $REMOTE_HOST_PUBLIC_KEY > ~/.ssh/known_hosts
+      - run:
+          name: Deploy backend
+          command: >
+            timeout 180s
+            ssh $REMOTE_HOST
+            "cd /var/www/colorific_stkrizh_dev/ &&
+            git reset --hard &&
+            git checkout master &&
+            git pull &&
+            docker-compose down &&
+            docker-compose run --rm backend alembic upgrade head &&
+            docker-compose up --build -d nginx"
+
 workflows:
   main:
     jobs:
-      - build-and-test
+      - test-backend
+      - deploy-frontend:
+          requires:
+            - test-backend
+          filters:
+            branches:
+              only: master
+      - deploy-backend:
+          requires:
+            - deploy-frontend
+          filters:
+            branches:
+              only: master

@@ -10,7 +10,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_DB: ${POSTGRES_DB}
     volumes:
-      - .postgresql_data:/var/lib/postgresql/data
+      - ./.postgresql_data:/var/lib/postgresql/data
 
   redis:
     image: redis:6.0
@@ -33,7 +33,7 @@ services:
     depends_on:
       - backend
     volumes:
+      - /var/run/colorific:/var/run/colorific
+      - ./.logs:/var/log/nginx
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
-      - .nginx_logs:/var/log/nginx/
-    ports:
-      - "80:80"
+      - ./frontend/dist/client:/app

@@ -137,5 +137,5 @@ dmypy.json
 # PostgreSQL data
 .postgresql_data
 
-# Nginx logs
-.nginx_logs
+# Logs
+.logs

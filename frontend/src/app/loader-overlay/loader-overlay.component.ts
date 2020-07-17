@@ -8,7 +8,7 @@ import { StateService } from '../state.service';
 })
 export class LoaderOverlayComponent implements OnInit {
 
-  constructor(private state: StateService) { }
+  constructor(public state: StateService) { }
 
   ngOnInit() {
   }
