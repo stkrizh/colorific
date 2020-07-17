@@ -37,15 +37,6 @@ jobs:
             IMAGE_INDEXING: false
             CORS_ALLOW_ORIGIN: '*'
 
-  test-backend-temp:
-    docker:
-      - image: python:3.8
-    steps:
-      - checkout
-      - run:
-          name: Running temp job
-          command: echo OK
-
   deploy-frontend:
     docker:
       - image: node:14.5
@@ -103,7 +94,7 @@ jobs:
             ssh $REMOTE_HOST
             "cd /var/www/colorific_stkrizh_dev/ &&
             git reset --hard &&
-            git checkout F22-frontend-wrap-up &&
+            git checkout master &&
             git pull &&
             docker-compose down &&
             docker-compose run --rm backend alembic upgrade head &&
@@ -112,16 +103,16 @@ jobs:
 workflows:
   main:
     jobs:
-      - test-backend-temp
-#      - deploy-frontend:
-#          requires:
-#            - test-backend-temp
-#          filters:
-#            branches:
-#              only: F22-frontend-wrap-up
-      - deploy-backend:
+      - test-backend
+      - deploy-frontend:
           requires:
-            - test-backend-temp
+            - test-backend
           filters:
             branches:
-              only: F22-frontend-wrap-up
+              only: master
+      - deploy-backend:
+          requires:
+            - deploy-frontend
+          filters:
+            branches:
+              only: master
