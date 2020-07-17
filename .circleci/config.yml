@@ -69,15 +69,16 @@ jobs:
           working_directory: ./frontend
           command: ./node_modules/@angular/cli/bin/ng build -c production
       - run:
-          name: Remove old dist files
-          command: >
-            timeout 60s
-            ssh -o "StrictHostKeyChecking no" $REMOTE_HOST
-            "rm -rf /var/www/colorific_stkrizh_dev/frontend/dist"
+          name: Prepare SSH keys
+          command: |
+            mkdir -p ~/.ssh
+            chmod 700 ~/.ssh
+            echo $REMOTE_HOST_PUBLIC_KEY > ~/.ssh/known_hosts
       - run:
           name: Deploy Angular application
           command: >
             timeout 60s
+            ssh $REMOTE_HOST "rm -rf /var/www/colorific_stkrizh_dev/frontend/dist" &&
             scp -r ./frontend/dist
             $REMOTE_HOST:/var/www/colorific_stkrizh_dev/frontend/
 
@@ -90,10 +91,16 @@ jobs:
             - "12:a0:00:89:67:f4:2d:b3:4c:b0:ca:5f:25:1d:bb:26"
       - checkout
       - run:
+          name: Prepare SSH keys
+          command: |
+            mkdir -p ~/.ssh
+            chmod 700 ~/.ssh
+            echo $REMOTE_HOST_PUBLIC_KEY > ~/.ssh/known_hosts
+      - run:
           name: Deploy backend
           command: >
             timeout 180s
-            ssh -o "StrictHostKeyChecking no" $REMOTE_HOST
+            ssh $REMOTE_HOST
             "cd /var/www/colorific_stkrizh_dev/ &&
             git reset --hard &&
             git checkout F22-frontend-wrap-up &&
@@ -106,12 +113,12 @@ workflows:
   main:
     jobs:
       - test-backend-temp
-      - deploy-frontend:
-          requires:
-            - test-backend-temp
-          filters:
-            branches:
-              only: F22-frontend-wrap-up
+#      - deploy-frontend:
+#          requires:
+#            - test-backend-temp
+#          filters:
+#            branches:
+#              only: F22-frontend-wrap-up
       - deploy-backend:
           requires:
             - test-backend-temp
