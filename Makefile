@@ -46,6 +46,13 @@ sync-all: .check-venv
 	$(SUCCESS)
 
 
+migrate: .check-venv
+	@echo "-----------------------"
+	@echo "--- Applying DB migrations"
+	alembic upgrade head
+	$(SUCCESS)
+
+
 run: .check-venv
 	@echo "-----------------------"
 	@echo "--- Starting up"
