@@ -5,6 +5,8 @@
 [![License](http://img.shields.io/:license-mit-blue.svg?style=flat-square)](http://badges.mit-license.org)
 
 The app displays a color palette for all the colors identified in uploaded images.
+Currently it uses [K-means](https://scikit-learn.org/stable/modules/clustering.html#k-means)
+clustering algorithm internally for color extraction.
 
 **>> [Live demo](https://colorific.stkrizh.dev)**
 
