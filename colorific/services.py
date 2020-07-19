@@ -11,7 +11,8 @@ async def get_images_by_color(
     color: Color,
     image_count: int = 36,
     offset: int = 0,
-    percentage_weight: float = 0.5,
+    l_weight: float = 0.1,
+    percentage_weight: float = 0.1,
 ) -> List[Image]:
     """
     Return images from DB ordered by color similarity.
@@ -26,7 +27,7 @@ async def get_images_by_color(
             image.url_thumb,
             MIN(
                 SQRT(
-                    (c."L" / 100 - :L)^2 +
+                    :l_weight * (c."L" / 100 - :L)^2 +
                     ((c.a + 128) / 256 - :a)^2 +
                     ((c.b + 128) / 256 - :b)^2 +
                     :percentage_weight * (c.percentage - 1)^2
@@ -47,6 +48,7 @@ async def get_images_by_color(
             "L": color.L / 100,
             "a": (color.a + 128) / 256,
             "b": (color.b + 128) / 256,
+            "l_weight": 0.1,
             "percentage_weight": percentage_weight,
             "image_count": image_count,
             "offset": offset,
