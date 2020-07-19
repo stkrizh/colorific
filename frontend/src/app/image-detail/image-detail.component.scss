@@ -1,3 +1,5 @@
+@import "./node_modules/bulma/sass/utilities/_all.sass";
+
 .image-detail-container {
   position: fixed;
   background-color: rgba(255, 255, 255, 0.6);
@@ -23,6 +25,10 @@
   background-position: center center;
   background-repeat: no-repeat;
   background-size: cover;
+
+  @include until($tablet) {
+    width: 100%;
+  }
 
   img {
     max-width: 100%;
