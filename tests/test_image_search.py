@@ -81,22 +81,15 @@ async def test_image_list(client):
 
 
 @pytest.mark.parametrize(
-    "color, expected_order",
-    [
-        ("ff0000", [5, 1]),
-        ("ffffff", [3, 4, 5, 1]),
-        ("000000", [2, 1, 5]),
-        ("008800", [4, 5]),
-    ],
+    "color, expected_id", [("ff0000", 5), ("ffffff", 3), ("000000", 2), ("008800", 4)]
 )
-async def test_image_ordering(client, color, expected_order):
+async def test_image_ordering(client, color, expected_id):
     response = await client.get(f"/images?color={color}")
     assert response.status == 200
     response_json = await response.json()
     assert len(response_json) == 5
     ids = [image["id"] for image in response_json]
-    for expected_id, actual_id in zip(expected_order, ids):
-        assert expected_id == actual_id
+    assert ids[0] == expected_id
 
 
 @pytest.mark.parametrize(
