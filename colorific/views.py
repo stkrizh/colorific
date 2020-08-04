@@ -170,7 +170,7 @@ class ImageListView(ViewMixin, View):
         time_interval=config.rate_limit.image_search_ip_time_interval,
         limit=config.rate_limit.image_search_ip_limit,
         error=(
-            "You've making too many requests to the service, "
+            "You've made too many requests to the service, "
             "please try again a bit later."
         ),
     )
