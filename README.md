@@ -8,8 +8,6 @@ The app displays a color palette for all the colors identified in uploaded image
 Currently it uses [K-means](https://scikit-learn.org/stable/modules/clustering.html#k-means)
 clustering algorithm internally for color extraction.
 
-**>> [Live demo](https://colorific.stkrizh.dev)**
-
 
 ## Development setup
 Make sure you have [Docker](https://docs.docker.com/get-docker/) and 
